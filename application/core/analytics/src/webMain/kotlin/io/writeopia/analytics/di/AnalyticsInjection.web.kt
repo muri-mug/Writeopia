@@ -10,7 +10,10 @@ actual class AnalyticsInjection {
     private val analyticsManager: AnalyticsManager by lazy {
         MixpanelHttpAnalytics(
             token = MixpanelConfig.TOKEN,
-            httpClient = HttpClient(Js)
+            httpClient = HttpClient(Js),
+            defaultProperties = mapOf(
+                "\$os" to "Web",
+            )
         )
     }
 

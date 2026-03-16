@@ -10,7 +10,11 @@ actual class AnalyticsInjection {
     private val analyticsManager: AnalyticsManager by lazy {
         MixpanelHttpAnalytics(
             token = MixpanelConfig.TOKEN,
-            httpClient = HttpClient(CIO)
+            httpClient = HttpClient(CIO),
+            defaultProperties = mapOf(
+                "\$os" to (System.getProperty("os.name") ?: "Desktop"),
+                "\$os_version" to (System.getProperty("os.version") ?: ""),
+            )
         )
     }
 

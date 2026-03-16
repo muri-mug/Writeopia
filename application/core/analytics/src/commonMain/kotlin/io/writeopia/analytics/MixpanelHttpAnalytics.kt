@@ -15,7 +15,8 @@ import kotlinx.serialization.json.put
 
 class MixpanelHttpAnalytics(
     private val token: String,
-    private val httpClient: HttpClient
+    private val httpClient: HttpClient,
+    private val defaultProperties: Map<String, String> = emptyMap()
 ) : AnalyticsManager {
 
     private val scope = CoroutineScope(Dispatchers.Default + SupervisorJob())
@@ -27,6 +28,7 @@ class MixpanelHttpAnalytics(
                 val propsJson = buildJsonObject {
                     put("token", token)
                     put("distinct_id", distinctId)
+                    defaultProperties.forEach { (key, value) -> put(key, value) }
                     properties.forEach { (key, value) ->
                         when (value) {
                             is String -> put(key, value)

@@ -5,12 +5,17 @@ import io.ktor.client.engine.darwin.Darwin
 import io.writeopia.analytics.AnalyticsManager
 import io.writeopia.analytics.MixpanelConfig
 import io.writeopia.analytics.MixpanelHttpAnalytics
+import platform.Foundation.NSProcessInfo
 
 actual class AnalyticsInjection {
     private val analyticsManager: AnalyticsManager by lazy {
         MixpanelHttpAnalytics(
             token = MixpanelConfig.TOKEN,
-            httpClient = HttpClient(Darwin)
+            httpClient = HttpClient(Darwin),
+            defaultProperties = mapOf(
+                "\$os" to "iOS",
+                "\$os_version" to NSProcessInfo.processInfo.operatingSystemVersionString,
+            )
         )
     }
 
