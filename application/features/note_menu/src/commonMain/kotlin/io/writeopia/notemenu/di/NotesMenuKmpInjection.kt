@@ -3,6 +3,7 @@ package io.writeopia.notemenu.di
 import androidx.compose.runtime.Composable
 import androidx.lifecycle.viewmodel.compose.viewModel
 import io.writeopia.OllamaRepository
+import io.writeopia.analytics.di.AnalyticsInjection
 import io.writeopia.auth.core.di.AuthCoreInjectionNeo
 import io.writeopia.common.utils.NotesNavigation
 import io.writeopia.core.configuration.di.AppConfigurationInjector
@@ -99,6 +100,7 @@ class NotesMenuKmpInjection private constructor(
             keyboardEventFlow = keyboardEventFlow,
             workspaceConfigRepository = appConfigurationInjector.provideWorkspaceConfigRepository(),
             folderSync = provideDocumentSync(),
+            analyticsManager = AnalyticsInjection.singleton().provideAnalyticsManager(),
         )
 
     @Composable

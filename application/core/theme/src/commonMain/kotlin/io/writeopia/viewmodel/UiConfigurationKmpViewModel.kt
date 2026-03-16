@@ -2,6 +2,10 @@ package io.writeopia.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import io.writeopia.analytics.AnalyticsManager
+import io.writeopia.analytics.NoOpAnalyticsManager
+import io.writeopia.analytics.WriteopiaEvents
+import io.writeopia.analytics.WriteopiaProperties
 import io.writeopia.model.ColorThemeOption
 import io.writeopia.repository.UiConfigurationRepository
 import kotlinx.coroutines.Dispatchers
@@ -13,6 +17,7 @@ import kotlinx.coroutines.launch
 
 class UiConfigurationKmpViewModel(
     private val uiConfigurationSqlDelightRepository: UiConfigurationRepository,
+    private val analyticsManager: AnalyticsManager = NoOpAnalyticsManager,
 ) : ViewModel(), UiConfigurationViewModel {
 
     override fun listenForColorTheme(
@@ -25,6 +30,7 @@ class UiConfigurationKmpViewModel(
             }.stateIn(viewModelScope, SharingStarted.Lazily, null)
 
     override fun changeColorTheme(colorThemeOption: ColorThemeOption) {
+        analyticsManager.track(WriteopiaEvents.SETTINGS_THEME_CHANGED, mapOf(WriteopiaProperties.THEME to colorThemeOption.name.lowercase()))
         viewModelScope.launch(Dispatchers.Default) {
             uiConfigurationSqlDelightRepository
                 .updateConfiguration("disconnected_user") { config ->

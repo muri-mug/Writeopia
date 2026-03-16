@@ -2,6 +2,10 @@ package io.writeopia.auth.register
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import io.writeopia.analytics.AnalyticsManager
+import io.writeopia.analytics.NoOpAnalyticsManager
+import io.writeopia.analytics.WriteopiaEvents
+import io.writeopia.analytics.WriteopiaProperties
 import io.writeopia.auth.core.manager.AuthRepository
 import io.writeopia.auth.core.data.AuthApi
 import io.writeopia.sdk.models.utils.ResultData
@@ -16,6 +20,7 @@ import kotlinx.coroutines.launch
 internal class RegisterViewModel(
     private val authRepository: AuthRepository,
     private val authApi: AuthApi,
+    private val analyticsManager: AnalyticsManager = NoOpAnalyticsManager,
 ) : ViewModel() {
 
     private val _name = MutableStateFlow("")
@@ -66,6 +71,8 @@ internal class RegisterViewModel(
                         val user = result.data.writeopiaUser.toModel()
 
                         authRepository.saveUser(user = user, selected = true)
+                        analyticsManager.track(WriteopiaEvents.USER_SIGNED_UP, mapOf(WriteopiaProperties.AUTH_METHOD to "email"))
+                        analyticsManager.identify(user.id)
 
                         result.map { true }
                     }

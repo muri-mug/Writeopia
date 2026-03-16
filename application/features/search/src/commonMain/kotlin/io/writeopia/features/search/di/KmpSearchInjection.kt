@@ -1,5 +1,6 @@
 package io.writeopia.features.search.di
 
+import io.writeopia.analytics.di.AnalyticsInjection
 import io.writeopia.auth.core.di.AuthCoreInjectionNeo
 import io.writeopia.di.AppConnectionInjection
 import io.writeopia.features.search.api.SearchApi
@@ -44,7 +45,10 @@ class KmpSearchInjection private constructor(
     )
 
     override fun provideViewModel(): SearchKmpViewModel =
-        SearchKmpViewModel(searchRepository = provideRepository())
+        SearchKmpViewModel(
+            searchRepository = provideRepository(),
+            analyticsManager = AnalyticsInjection.singleton().provideAnalyticsManager(),
+        )
 
     companion object {
         private var instance: KmpSearchInjection? = null

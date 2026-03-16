@@ -2,6 +2,7 @@ package io.writeopia.editor.di
 
 import androidx.compose.runtime.Composable
 import androidx.lifecycle.viewmodel.compose.viewModel
+import io.writeopia.analytics.di.AnalyticsInjection
 import io.writeopia.auth.core.di.AuthCoreInjectionNeo
 import io.writeopia.auth.core.manager.AuthRepository
 import io.writeopia.core.configuration.di.AppConfigurationInjector
@@ -78,7 +79,8 @@ class EditorKmpInjector private constructor(
             copyManager = copyManager,
             workspaceConfigRepository = appConfigurationInjector.provideWorkspaceConfigRepository(),
             authRepository = authCoreInjection.provideAuthRepository(),
-            inDocumentSearchRepository = inDocumentSearchInjection.provideInDocumentSearchRepo()
+            inDocumentSearchRepository = inDocumentSearchInjection.provideInDocumentSearchRepo(),
+            analyticsManager = AnalyticsInjection.singleton().provideAnalyticsManager(),
         )
 
     @Composable

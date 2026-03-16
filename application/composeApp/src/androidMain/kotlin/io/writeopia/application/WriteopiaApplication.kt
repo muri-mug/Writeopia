@@ -1,6 +1,7 @@
 package io.writeopia.application
 
 import android.app.Application
+import io.writeopia.analytics.di.AnalyticsInjection
 import io.writeopia.persistence.room.DatabaseConfigAndroid
 import io.writeopia.persistence.room.WriteopiaApplicationDatabase
 import io.writeopia.ui.drawer.video.VideoFrameConfig
@@ -12,5 +13,6 @@ class WriteopiaApplication : Application() {
         VideoFrameConfig.configCoilForVideoFrame(this)
 
         WriteopiaApplicationDatabase.database(DatabaseConfigAndroid.roomBuilder(this))
+        AnalyticsInjection.initialize(this)
     }
 }

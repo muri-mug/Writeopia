@@ -2,6 +2,9 @@ package io.writeopia.features.search.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import io.writeopia.analytics.AnalyticsManager
+import io.writeopia.analytics.NoOpAnalyticsManager
+import io.writeopia.analytics.WriteopiaEvents
 import io.writeopia.features.search.repository.SearchRepository
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
@@ -15,7 +18,8 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.stateIn
 
 class SearchKmpViewModel(
-    private val searchRepository: SearchRepository
+    private val searchRepository: SearchRepository,
+    private val analyticsManager: AnalyticsManager = NoOpAnalyticsManager,
 ) : SearchViewModel, ViewModel() {
 
     private val _searchState = MutableStateFlow("")
@@ -37,6 +41,9 @@ class SearchKmpViewModel(
     override fun init() {}
 
     override fun onSearchType(query: String) {
+        if (query.isNotEmpty() && _searchState.value.isEmpty()) {
+            analyticsManager.track(WriteopiaEvents.SEARCH_PERFORMED)
+        }
         _searchState.value = query
     }
 }

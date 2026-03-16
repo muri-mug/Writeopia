@@ -2,6 +2,7 @@ package io.writeopia.notemenu.di
 
 import androidx.compose.runtime.Composable
 import androidx.lifecycle.viewmodel.compose.viewModel
+import io.writeopia.analytics.di.AnalyticsInjection
 import io.writeopia.core.configuration.di.UiConfigurationCoreInjector
 import io.writeopia.viewmodel.UiConfigurationKmpViewModel
 import io.writeopia.viewmodel.UiConfigurationViewModel
@@ -12,7 +13,10 @@ actual class UiConfigurationInjector private constructor(
 
     @Composable
     actual fun provideUiConfigurationViewModel(): UiConfigurationViewModel = viewModel {
-        UiConfigurationKmpViewModel(uiConfigurationCoreInjector.provideUiConfigurationRepository())
+        UiConfigurationKmpViewModel(
+            uiConfigurationCoreInjector.provideUiConfigurationRepository(),
+            AnalyticsInjection.singleton().provideAnalyticsManager(),
+        )
     }
 
     actual companion object {

@@ -42,6 +42,7 @@ import io.writeopia.sqldelight.di.WriteopiaDbInjector
 import io.writeopia.theme.WriteopiaTheme
 import io.writeopia.ui.image.ImageLoadConfig
 import io.writeopia.ui.keyboard.KeyboardEvent
+import io.writeopia.analytics.di.AnalyticsInjection
 import io.writeopia.common.utils.ALLOW_BACKEND
 import io.writeopia.common.utils.configuration.LocalPlatform
 import io.writeopia.common.utils.configuration.PlatformType
@@ -212,6 +213,7 @@ private fun ApplicationScope.App(onCloseRequest: () -> Unit = ::exitApplication)
 
                 WriteopiaDbInjector.initialize(database)
                 RepositoryInjector.initialize(SqlDelightDaoInjector.singleton())
+                AnalyticsInjection.singleton()
                 WriteopiaConnectionInjector.setBaseUrl(
                     "https://writeopia.dev"
 //                        "http://localhost:8080"

@@ -2,6 +2,7 @@ package io.writeopia.auth.di
 
 import androidx.compose.runtime.Composable
 import androidx.lifecycle.viewmodel.compose.viewModel
+import io.writeopia.analytics.di.AnalyticsInjection
 import io.writeopia.auth.core.data.AuthApi
 import io.writeopia.auth.core.di.AuthCoreInjectionNeo
 import io.writeopia.auth.core.manager.AuthRepository
@@ -42,7 +43,9 @@ class AuthInjection private constructor(
     internal fun provideRegisterViewModel(
         authRepository: AuthRepository = authCoreInjection.provideAuthRepository(),
         authApi: AuthApi = authCoreInjection.provideAuthApi()
-    ): RegisterViewModel = viewModel { RegisterViewModel(authRepository, authApi) }
+    ): RegisterViewModel = viewModel {
+        RegisterViewModel(authRepository, authApi, AnalyticsInjection.singleton().provideAnalyticsManager())
+    }
 
     @Composable
     internal fun provideResetPasswordViewModel(
@@ -61,6 +64,7 @@ class AuthInjection private constructor(
             configRepository = appConfigurationInjector.provideNotesConfigurationRepository(),
             notesUseCase = provideNotesUseCase(),
             ollamaRepository = ollamaInjection.provideRepository(),
+            analyticsManager = AnalyticsInjection.singleton().provideAnalyticsManager(),
         )
     }
 

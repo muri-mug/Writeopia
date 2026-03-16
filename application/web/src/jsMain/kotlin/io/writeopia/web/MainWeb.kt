@@ -13,6 +13,7 @@ import androidx.navigation.compose.rememberNavController
 import io.writeopia.common.utils.Destinations
 import io.writeopia.notemenu.di.UiConfigurationInjector
 import io.writeopia.notes.desktop.components.DesktopApp
+import io.writeopia.analytics.di.AnalyticsInjection
 import io.writeopia.sdk.network.injector.WriteopiaConnectionInjector
 import io.writeopia.sdk.persistence.core.di.RepositoryInjector
 import io.writeopia.sqldelight.di.SqlDelightDaoInjector
@@ -35,6 +36,7 @@ fun CreateAppInMemory() {
 
 //    WriteopiaDbInjector.initialize(null)
     RepositoryInjector.initialize(SqlDelightDaoInjector.singleton())
+    AnalyticsInjection.singleton()
     WriteopiaConnectionInjector.setBaseUrl(
         "https://writeopia.dev"
 //                        "http://localhost:8080"

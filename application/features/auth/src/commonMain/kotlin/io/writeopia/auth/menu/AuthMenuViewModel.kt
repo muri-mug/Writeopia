@@ -5,6 +5,10 @@ package io.writeopia.auth.menu
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.writeopia.OllamaRepository
+import io.writeopia.analytics.AnalyticsManager
+import io.writeopia.analytics.NoOpAnalyticsManager
+import io.writeopia.analytics.WriteopiaEvents
+import io.writeopia.analytics.WriteopiaProperties
 import io.writeopia.api.OllamaApi
 import io.writeopia.auth.core.data.AuthApi
 import io.writeopia.auth.core.manager.AuthRepository
@@ -40,6 +44,7 @@ class AuthMenuViewModel(
     private val notesUseCase: NotesUseCase,
     private val ollamaRepository: OllamaRepository,
     private val json: Json = writeopiaJson,
+    private val analyticsManager: AnalyticsManager = NoOpAnalyticsManager,
 ) : ViewModel() {
 
     private val _email = MutableStateFlow("")
@@ -81,6 +86,8 @@ class AuthMenuViewModel(
     fun useOffline(sideEffect: () -> Unit) {
         viewModelScope.launch {
             authRepository.useOffline()
+            analyticsManager.track(WriteopiaEvents.USER_SIGNED_IN, mapOf(WriteopiaProperties.AUTH_METHOD to "offline"))
+            analyticsManager.identify(WriteopiaUser.disconnectedUser().id)
 
             val userId = WriteopiaUser.disconnectedUser().id
             val workspace = Workspace.disconnectedWorkspace()
@@ -135,6 +142,8 @@ class AuthMenuViewModel(
                             authRepository.saveToken(user.id, token)
 //                            AppConnectionInjection.singleton().setJwtToken(token)
                         }
+                        analyticsManager.track(WriteopiaEvents.USER_SIGNED_IN, mapOf(WriteopiaProperties.AUTH_METHOD to "email"))
+                        analyticsManager.identify(user.id)
 
                         result.map { true }
                     }

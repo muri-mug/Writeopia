@@ -36,6 +36,7 @@ lifecycleViewmodelCompose = "2.9.6"
 compileSdk = "36"
 targetSdk = "36"
 minSdk = "26"
+mixpanel = "8.0.3"
 
 [libraries]
 activity-compose = { module = "androidx.activity:activity-compose" }
@@ -94,6 +95,8 @@ database-postgresql = { group = "org.postgresql", name = "postgresql", version.r
 compose-navigation = { group = "org.jetbrains.androidx.navigation", name = "navigation-compose", version.ref = "compose-navigation" }
 sqldelight-web-driver = { module = "app.cash.sqldelight:web-worker-driver", version.ref = "webWorkerDriver" }
 lifecycle-viewmodel-compose = { module = "org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "lifecycleViewmodelCompose" }
+mixpanel-android = { module = "com.mixpanel.android:mixpanel-android", version.ref = "mixpanel" }
+ktor-client-js = { module = "io.ktor:ktor-client-js", version.ref = "ktor" }
 
 [plugins]
 application = { id = "com.android.application", version.ref = "agp" }

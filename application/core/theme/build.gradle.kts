@@ -45,6 +45,7 @@ kotlin {
             dependencies {
                 implementation(project(":application:core:persistence_sqldelight"))
                 implementation(project(":application:core:utils"))
+                implementation(project(":application:core:analytics"))
 
                 implementation(compose.material3)
                 implementation(libs.lifecycle.viewmodel.compose)

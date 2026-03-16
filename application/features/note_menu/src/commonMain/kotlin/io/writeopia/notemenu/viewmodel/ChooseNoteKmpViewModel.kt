@@ -5,6 +5,9 @@ package io.writeopia.notemenu.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.writeopia.OllamaRepository
+import io.writeopia.analytics.AnalyticsManager
+import io.writeopia.analytics.NoOpAnalyticsManager
+import io.writeopia.analytics.WriteopiaEvents
 import io.writeopia.auth.core.manager.AuthRepository
 import io.writeopia.common.utils.DISCONNECTED_USER_ID
 import io.writeopia.common.utils.NotesNavigation
@@ -79,6 +82,7 @@ internal class ChooseNoteKmpViewModel(
     private val documentToJson: DocumentToJson = DocumentToJson(),
     private val writeopiaJsonParser: WriteopiaJsonParser = WriteopiaJsonParser(),
     private val supportedImageFiles: Set<String> = setOf("jpg", "jpeg", "png"),
+    private val analyticsManager: AnalyticsManager = NoOpAnalyticsManager,
 ) : ChooseNoteViewModel, ViewModel(), FolderController by folderController {
 
     private val _showOnboardingState =
@@ -331,6 +335,7 @@ internal class ChooseNoteKmpViewModel(
 
     override fun deleteSelectedNotes() {
         val selected = selectedNotes.value
+        analyticsManager.track(WriteopiaEvents.DOCUMENT_DELETED)
 
         viewModelScope.launch(Dispatchers.Default) {
             notesUseCase.deleteNotes(selected)
@@ -501,6 +506,7 @@ internal class ChooseNoteKmpViewModel(
     }
 
     override fun completeOnboarding() {
+        analyticsManager.track(WriteopiaEvents.ONBOARDING_COMPLETED)
         viewModelScope.launch(Dispatchers.Default) {
             notesConfig.setOnboarded()
             _showOnboardingState.value = OnboardingState.CONGRATULATION

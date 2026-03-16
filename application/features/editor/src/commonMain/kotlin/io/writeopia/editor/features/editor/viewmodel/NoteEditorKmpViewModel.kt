@@ -6,6 +6,10 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.writeopia.OllamaRepository
+import io.writeopia.analytics.AnalyticsManager
+import io.writeopia.analytics.NoOpAnalyticsManager
+import io.writeopia.analytics.WriteopiaEvents
+import io.writeopia.analytics.WriteopiaProperties
 import io.writeopia.auth.core.manager.AuthRepository
 import io.writeopia.common.utils.collections.toNodeTree
 import io.writeopia.common.utils.file.SaveImage
@@ -86,7 +90,8 @@ class NoteEditorKmpViewModel(
     private val keyboardEventFlow: Flow<KeyboardEvent>,
     private val copyManager: CopyManager,
     private val authRepository: AuthRepository,
-    private val inDocumentSearchRepository: InDocumentSearchRepository
+    private val inDocumentSearchRepository: InDocumentSearchRepository,
+    private val analyticsManager: AnalyticsManager = NoOpAnalyticsManager,
 ) : NoteEditorViewModel,
     ViewModel(),
     BackstackInform by writeopiaManager,
@@ -429,6 +434,7 @@ class NoteEditorKmpViewModel(
             return
         }
 
+        analyticsManager.track(WriteopiaEvents.DOCUMENT_CREATED)
         writeopiaManager.newDocument(documentId, title, parentFolder = parentFolderId)
         writeopiaManager.saveOnStoryChanges(OnUpdateDocumentTracker(documentRepository))
         writeopiaManager.liveSync(sharedEditionManager)
@@ -444,6 +450,7 @@ class NoteEditorKmpViewModel(
                 documentRepository.loadDocumentById(documentId, workspace.id)
 
             if (document != null) {
+                analyticsManager.track(WriteopiaEvents.DOCUMENT_OPENED)
                 writeopiaManager.loadDocument(document)
                 writeopiaManager.saveOnStoryChanges(
                     OnUpdateDocumentTracker(
@@ -487,16 +494,19 @@ class NoteEditorKmpViewModel(
 
     override fun onAddCheckListClick() {
         if (!isEditable.value) return
+        analyticsManager.track(WriteopiaEvents.EDITOR_BLOCK_ADDED, mapOf(WriteopiaProperties.BLOCK_TYPE to "checklist"))
         writeopiaManager.onCheckItemClicked()
     }
 
     override fun onAddListItemClick() {
         if (!isEditable.value) return
+        analyticsManager.track(WriteopiaEvents.EDITOR_BLOCK_ADDED, mapOf(WriteopiaProperties.BLOCK_TYPE to "list"))
         writeopiaManager.addListItem()
     }
 
     override fun onAddCodeBlockClick() {
         if (!isEditable.value) return
+        analyticsManager.track(WriteopiaEvents.EDITOR_BLOCK_ADDED, mapOf(WriteopiaProperties.BLOCK_TYPE to "code"))
         writeopiaManager.onCodeBlockClicked()
     }
 
@@ -518,6 +528,7 @@ class NoteEditorKmpViewModel(
     }
 
     override fun shareDocumentInMarkdown() {
+        analyticsManager.track(WriteopiaEvents.DOCUMENT_SHARED, mapOf(WriteopiaProperties.SHARE_FORMAT to "markdown"))
         shareDocument(::documentToMd, "plain/text")
     }
 
@@ -561,6 +572,7 @@ class NoteEditorKmpViewModel(
     }
 
     override fun addImage(imagePath: String) {
+        analyticsManager.track(WriteopiaEvents.EDITOR_IMAGE_ADDED)
         viewModelScope.launch(Dispatchers.Default) {
             val path = workspaceConfigRepository
                 .loadWorkspacePath(authRepository.getUser().id)
@@ -620,6 +632,7 @@ class NoteEditorKmpViewModel(
     override fun askAiBySelection() {
         if (ollamaRepository == null) return
 
+        analyticsManager.track(WriteopiaEvents.AI_QUESTION_ASKED)
         aiJob = viewModelScope.launch(Dispatchers.Default) {
             PromptService.promptBySelection(
                 authRepository.getUser().id,
@@ -709,6 +722,7 @@ class NoteEditorKmpViewModel(
     }
 
     override fun deleteDocument() {
+        analyticsManager.track(WriteopiaEvents.DOCUMENT_DELETED)
         viewModelScope.launch(Dispatchers.Default) {
             documentRepository.deleteDocument(writeopiaManager.getDocument())
         }
