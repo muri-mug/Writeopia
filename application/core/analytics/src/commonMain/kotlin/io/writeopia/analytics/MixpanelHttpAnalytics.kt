@@ -47,7 +47,7 @@ class MixpanelHttpAnalytics(
                         }
                     )
                 }
-                httpClient.post("https://api.mixpanel.com/track") {
+                httpClient.post("${MixpanelConfig.API_HOST}/track") {
                     headers {
                         append(HttpHeaders.ContentType, "application/json")
                     }
