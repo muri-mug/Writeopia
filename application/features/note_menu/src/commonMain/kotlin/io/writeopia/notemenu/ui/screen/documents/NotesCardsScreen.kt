@@ -837,9 +837,10 @@ private fun previewDrawers(isDarkTheme: Boolean): Map<Int, StoryStepDrawer> {
 private fun shadowModifier(): Modifier =
     Modifier.padding(4.dp)
         .shadow(
-            8.dp,
+            2.dp,
             shape = MaterialTheme.shapes.large,
-            spotColor = WriteopiaTheme.colorScheme.cardShadow
+            spotColor = WriteopiaTheme.colorScheme.cardShadow,
+            ambientColor = WriteopiaTheme.colorScheme.cardShadow,
         )
 
 @OptIn(ExperimentalSharedTransitionApi::class)

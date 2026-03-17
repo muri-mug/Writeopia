@@ -20,7 +20,9 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.NavigationDrawerItem
 import androidx.compose.material3.PlainTooltip
 import androidx.compose.material3.Text
 import androidx.compose.material3.TooltipBox
@@ -74,7 +76,6 @@ fun SideGlobalMenu(
     toggleMaxScreen: () -> Unit,
 ) {
     val widthState by derivedStateOf { width }
-
     val widthAnimatedState by animateDpAsState(widthState)
     val showContent by derivedStateOf {
         when {
@@ -113,57 +114,57 @@ fun SideGlobalMenu(
                     }
 
                     item {
-                        SettingsOptions(
+                        SideNavItem(
                             showContent = showContent,
                             iconVector = WrIcons.search,
                             contentDescription = WrStrings.search(),
                             text = WrStrings.search(),
-                            click = searchClick
+                            click = searchClick,
                         )
                     }
 
                     item {
-                        SettingsOptions(
+                        SideNavItem(
                             showContent = showContent,
                             iconVector = WrIcons.home,
                             contentDescription = WrStrings.home(),
                             text = WrStrings.home(),
-                            click = homeClick
+                            click = homeClick,
                         )
                     }
 
                     item {
-                        SettingsOptions(
+                        SideNavItem(
                             showContent = showContent,
                             iconVector = WrIcons.favorites,
                             contentDescription = WrStrings.favorites(),
                             text = WrStrings.favorites(),
-                            click = favoritesClick
+                            click = favoritesClick,
                         )
                     }
 
                     item {
-                        SettingsOptions(
+                        SideNavItem(
                             showContent = showContent,
                             iconVector = WrIcons.chart,
                             contentDescription = "Notes map",
                             text = "Notes map",
-                            click = forceGraphClick
+                            click = forceGraphClick,
                         )
                     }
 
                     item {
-                        SettingsOptions(
+                        SideNavItem(
                             showContent = showContent,
                             iconVector = WrIcons.delete,
                             contentDescription = "Trash",
                             text = "Trash",
-                            click = trashClick
+                            click = trashClick,
                         )
                     }
 
                     item {
-                        SettingsOptions(
+                        SideNavItem(
                             showContent = showContent,
                             iconVector = WrIcons.settings,
                             contentDescription = WrStrings.settings(),
@@ -216,88 +217,64 @@ fun SideGlobalMenu(
     }
 }
 
+// Uses M3 NavigationDrawerItem in full mode, IconButton+Tooltip in icon-only mode.
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun SettingsOptions(
+private fun SideNavItem(
     showContent: ShowContent,
     iconVector: ImageVector?,
     contentDescription: String,
     text: String,
     click: (() -> Unit)? = null,
-    trailingContent: @Composable (() -> Unit)? = null,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
-    if (showContent == ShowContent.ICONS) {
-        TooltipBox(
-            positionProvider = TooltipDefaults.rememberTooltipPositionProvider(),
-            tooltip = { PlainTooltip { Text(text) } },
-            state = rememberTooltipState()
-        ) {
-            SettingsOptionsRow(showContent, iconVector, contentDescription, text, click, trailingContent, modifier)
-        }
-    } else {
-        SettingsOptionsRow(showContent, iconVector, contentDescription, text, click, trailingContent, modifier)
-    }
-}
-
-@Composable
-private fun SettingsOptionsRow(
-    showContent: ShowContent,
-    iconVector: ImageVector?,
-    contentDescription: String,
-    text: String,
-    click: (() -> Unit)? = null,
-    trailingContent: @Composable (() -> Unit)? = null,
-    modifier: Modifier = Modifier
-) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = modifier
-            .padding(start = 4.dp)
-            .clip(MaterialTheme.shapes.large)
-            .let { modifierLet ->
-                if (click != null) {
-                    modifierLet.clickable(onClick = click)
-                } else {
-                    modifierLet
-                }
-            }
-            .padding(start = 14.dp, end = 10.dp, top = 10.dp, bottom = 10.dp)
-            .let { modifierLet ->
-                if (showContent == ShowContent.FULL) {
-                    modifierLet.fillMaxWidth()
-                } else {
-                    modifierLet
-                }
-            }
-    ) {
-        iconVector?.let { icon ->
-            Icon(
-                modifier = Modifier.size(22.dp),
-                imageVector = icon,
-                contentDescription = contentDescription,
-                tint = MaterialTheme.colorScheme.onBackground
+    when (showContent) {
+        ShowContent.FULL -> {
+            NavigationDrawerItem(
+                icon = {
+                    iconVector?.let {
+                        Icon(
+                            imageVector = it,
+                            contentDescription = contentDescription,
+                            modifier = Modifier.size(22.dp),
+                        )
+                    }
+                },
+                label = {
+                    Text(
+                        text = text,
+                        style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
+                    )
+                },
+                selected = false,
+                onClick = { click?.invoke() },
+                modifier = modifier.padding(horizontal = 8.dp, vertical = 2.dp),
             )
         }
 
-        if (showContent == ShowContent.FULL) {
-            Spacer(modifier = Modifier.width(10.dp))
-
-            Text(
-                text = text,
-                color = MaterialTheme.colorScheme.onBackground,
-                style = MaterialTheme.typography.bodySmall.copy(
-                    fontWeight = FontWeight.Bold
-                ),
-                maxLines = 1
-            )
-
-            if (trailingContent != null) {
-                Spacer(modifier = Modifier.weight(1F))
-
-                trailingContent()
+        ShowContent.ICONS -> {
+            TooltipBox(
+                positionProvider = TooltipDefaults.rememberTooltipPositionProvider(),
+                tooltip = { PlainTooltip { Text(text) } },
+                state = rememberTooltipState(),
+            ) {
+                IconButton(
+                    onClick = { click?.invoke() },
+                    modifier = modifier,
+                ) {
+                    iconVector?.let {
+                        Icon(
+                            imageVector = it,
+                            contentDescription = contentDescription,
+                            modifier = Modifier.size(22.dp),
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                    }
+                }
             }
         }
+
+        ShowContent.HIDE -> Unit
     }
 }
 
@@ -306,7 +283,7 @@ private fun title(
     text: String,
     click: (() -> Unit)? = null,
     trailingContent: @Composable (RowScope.() -> Unit)? = null,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
@@ -322,10 +299,8 @@ private fun title(
     ) {
         Text(
             text = text,
-            color = MaterialTheme.colorScheme.onBackground,
-            style = MaterialTheme.typography.bodySmall.copy(
-                fontWeight = FontWeight.Bold
-            ),
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            style = MaterialTheme.typography.labelMedium,
             maxLines = 1,
             modifier = Modifier.weight(1F)
         )

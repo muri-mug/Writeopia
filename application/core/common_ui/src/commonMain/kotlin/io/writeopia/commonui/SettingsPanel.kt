@@ -1,20 +1,17 @@
 package io.writeopia.commonui
 
 import androidx.compose.animation.Crossfade
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.NavigationDrawerItem
 import androidx.compose.material3.Text
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
@@ -23,13 +20,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import io.writeopia.common.utils.ALLOW_BACKEND
 import io.writeopia.common.utils.configuration.LocalPlatform
 import io.writeopia.resources.WrStrings
-import io.writeopia.theme.WriteopiaTheme
 
 @Composable
 fun SettingsPanel(
@@ -49,21 +43,21 @@ fun SettingsPanel(
             val currentPlatform = LocalPlatform.current
 
             if (ALLOW_BACKEND) {
-                SettingsButton(WrStrings.account(), SettingsPage.ACCOUNT, pageState) { page ->
+                SettingsNavItem(WrStrings.account(), SettingsPage.ACCOUNT, pageState) { page ->
                     pageState = page
                 }
             }
 
-            SettingsButton(WrStrings.appearance(), SettingsPage.APPEARANCE, pageState) { page ->
+            SettingsNavItem(WrStrings.appearance(), SettingsPage.APPEARANCE, pageState) { page ->
                 pageState = page
             }
 
             if (currentPlatform.isDesktop()) {
-                SettingsButton("AI", SettingsPage.AI, pageState) { page ->
+                SettingsNavItem("AI", SettingsPage.AI, pageState) { page ->
                     pageState = page
                 }
 
-                SettingsButton(
+                SettingsNavItem(
                     WrStrings.workspaceName(),
                     SettingsPage.DIRECTORY,
                     pageState
@@ -72,19 +66,23 @@ fun SettingsPanel(
                 }
             }
 
-            SettingsButton(WrStrings.teams(), SettingsPage.TEAMS, pageState) { page ->
+            SettingsNavItem(WrStrings.teams(), SettingsPage.TEAMS, pageState) { page ->
                 pageState = page
             }
 
             Spacer(modifier = Modifier.height(40.dp))
 
-            Text(WrStrings.version(), style = MaterialTheme.typography.labelSmall)
+            Text(
+                WrStrings.version(),
+                style = MaterialTheme.typography.labelSmall,
+                modifier = Modifier.padding(horizontal = 12.dp),
+            )
         }
 
         VerticalDivider(
             modifier = Modifier.fillMaxHeight(),
             thickness = 1.dp,
-            color = MaterialTheme.colorScheme.outlineVariant
+            color = MaterialTheme.colorScheme.outlineVariant,
         )
 
         Column(
@@ -107,27 +105,17 @@ fun SettingsPanel(
 }
 
 @Composable
-private fun SettingsButton(
+private fun SettingsNavItem(
     text: String,
     pageState: SettingsPage,
     currentPage: SettingsPage,
-    click: (SettingsPage) -> Unit
+    click: (SettingsPage) -> Unit,
 ) {
-    Text(
-        text,
-        modifier = Modifier.fillMaxWidth()
-            .padding(top = 2.dp, bottom = 2.dp, end = 16.dp)
-            .clip(MaterialTheme.shapes.medium)
-            .background(
-                if (currentPage == pageState) {
-                    WriteopiaTheme.colorScheme.highlight
-                } else {
-                    Color.Unspecified
-                }
-            )
-            .clickable { click(pageState) }
-            .padding(vertical = 4.dp, horizontal = 12.dp),
-        style = MaterialTheme.typography.bodyMedium
+    NavigationDrawerItem(
+        label = { Text(text, style = MaterialTheme.typography.bodyMedium) },
+        selected = currentPage == pageState,
+        onClick = { click(pageState) },
+        modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp),
     )
 }
 

@@ -111,10 +111,8 @@ private fun FolderItem(
 
         val bgColor =
             when {
-                inBound -> Color.LightGray
-                folder.highlighted -> Color.LightGray.copy(
-                    alpha = 0.7F
-                )
+                inBound -> MaterialTheme.colorScheme.surfaceVariant
+                folder.highlighted -> MaterialTheme.colorScheme.secondaryContainer
 
                 else -> WriteopiaTheme.colorScheme.globalBackground
             }
@@ -234,7 +232,7 @@ private fun DocumentItem(
 
     val background =
         if (document.highlighted) {
-            Color.Blue
+            MaterialTheme.colorScheme.secondaryContainer
         } else {
             WriteopiaTheme.colorScheme.globalBackground
         }

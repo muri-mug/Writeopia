@@ -29,7 +29,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import io.writeopia.common.utils.icons.WrIcons
 import kotlinx.coroutines.delay
@@ -93,11 +92,16 @@ private fun WrSnackbar(
         onDismiss()
     }
 
-    val backgroundColor = when (message.type) {
-        SnackbarType.SUCCESS -> Color(0xFF2E7D32)
-        SnackbarType.ERROR -> Color(0xFFC62828)
-        SnackbarType.INFO -> Color(0xFF1565C0)
-        SnackbarType.WARNING -> Color(0xFFE65100)
+    // M3 container tokens guarantee WCAG AA contrast with their paired onContainer token
+    val (backgroundColor, contentColor) = when (message.type) {
+        SnackbarType.SUCCESS -> MaterialTheme.colorScheme.tertiaryContainer to
+                MaterialTheme.colorScheme.onTertiaryContainer
+        SnackbarType.ERROR -> MaterialTheme.colorScheme.errorContainer to
+                MaterialTheme.colorScheme.onErrorContainer
+        SnackbarType.INFO -> MaterialTheme.colorScheme.secondaryContainer to
+                MaterialTheme.colorScheme.onSecondaryContainer
+        SnackbarType.WARNING -> MaterialTheme.colorScheme.primaryContainer to
+                MaterialTheme.colorScheme.onPrimaryContainer
     }
 
     Row(
@@ -109,7 +113,7 @@ private fun WrSnackbar(
     ) {
         Text(
             text = message.text,
-            color = Color.White,
+            color = contentColor,
             style = MaterialTheme.typography.bodyMedium,
         )
 
@@ -118,7 +122,7 @@ private fun WrSnackbar(
         Icon(
             imageVector = WrIcons.close,
             contentDescription = "Dismiss notification",
-            tint = Color.White,
+            tint = contentColor,
             modifier = Modifier
                 .size(16.dp)
                 .clip(RoundedCornerShape(4.dp))
