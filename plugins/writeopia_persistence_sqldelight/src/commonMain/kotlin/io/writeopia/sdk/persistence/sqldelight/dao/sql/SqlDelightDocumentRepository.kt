@@ -140,6 +140,19 @@ class SqlDelightDocumentRepository(
         refreshDocuments()
     }
 
+    override suspend fun loadDeletedDocuments(workspaceId: String): List<Document> =
+        documentSqlDao.getDeletedDocuments(workspaceId)
+
+    override suspend fun restoreDocuments(ids: Set<String>) {
+        documentSqlDao.restoreDocumentByIds(ids)
+        refreshDocuments()
+    }
+
+    override suspend fun permanentlyDeleteDocuments(ids: Set<String>) {
+        documentSqlDao.permanentlyDeleteDocumentByIds(ids)
+        refreshDocuments()
+    }
+
     override suspend fun deleteDocumentByFolder(folderId: String) {
         documentSqlDao.deleteDocumentsByFolderId(folderId)
     }

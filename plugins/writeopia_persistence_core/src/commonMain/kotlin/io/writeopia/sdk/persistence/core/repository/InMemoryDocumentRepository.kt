@@ -104,6 +104,14 @@ class InMemoryDocumentRepository : DocumentRepository {
         ids.forEach(documentsMap::remove)
     }
 
+    override suspend fun loadDeletedDocuments(workspaceId: String): List<Document> = emptyList()
+
+    override suspend fun restoreDocuments(ids: Set<String>) {}
+
+    override suspend fun permanentlyDeleteDocuments(ids: Set<String>) {
+        ids.forEach(documentsMap::remove)
+    }
+
     override suspend fun deleteByWorkspace(userId: String) {
         documentsMap.clear()
     }

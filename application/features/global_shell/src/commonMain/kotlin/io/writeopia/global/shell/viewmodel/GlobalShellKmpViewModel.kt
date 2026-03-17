@@ -80,6 +80,15 @@ class GlobalShellKmpViewModel(
     private val _showSearchDialog = MutableStateFlow(false)
     override val showSearchDialog: StateFlow<Boolean> = _showSearchDialog.asStateFlow()
 
+    private val _showCommandPaletteState = MutableStateFlow(false)
+    override val showCommandPaletteState: StateFlow<Boolean> = _showCommandPaletteState.asStateFlow()
+
+    private val _showTrashState = MutableStateFlow(false)
+    override val showTrashState: StateFlow<Boolean> = _showTrashState.asStateFlow()
+
+    private val _trashDocuments = MutableStateFlow<List<MenuItemUi>>(emptyList())
+    override val trashDocuments: StateFlow<List<MenuItemUi>> = _trashDocuments.asStateFlow()
+
     override val workspaceLocalPath: StateFlow<String> = workspaceHandler.workspaceLocalPath
 
     private val retryModels = MutableStateFlow(0)
@@ -274,6 +283,10 @@ class GlobalShellKmpViewModel(
                             showSearch()
                         }
 
+                        KeyboardEvent.COMMAND_PALETTE -> {
+                            showCommandPalette()
+                        }
+
                         else -> {}
                     }
                 }
@@ -347,6 +360,45 @@ class GlobalShellKmpViewModel(
 
     override fun hideSearch() {
         _showSearchDialog.value = false
+    }
+
+    override fun showCommandPalette() {
+        _showCommandPaletteState.value = true
+    }
+
+    override fun hideCommandPalette() {
+        _showCommandPaletteState.value = false
+    }
+
+    override fun showTrash() {
+        loadTrash()
+        _showTrashState.value = true
+    }
+
+    override fun hideTrash() {
+        _showTrashState.value = false
+    }
+
+    override fun loadTrash() {
+        viewModelScope.launch(Dispatchers.Default) {
+            val workspaceId = authRepository.getWorkspace()?.id ?: return@launch
+            val deleted = notesUseCase.loadDeletedDocuments(workspaceId)
+            _trashDocuments.value = deleted.map { doc -> doc.toUiCard() }
+        }
+    }
+
+    override fun restoreFromTrash(ids: Set<String>) {
+        viewModelScope.launch(Dispatchers.Default) {
+            notesUseCase.restoreDocuments(ids)
+            loadTrash()
+        }
+    }
+
+    override fun permanentlyDeleteFromTrash(ids: Set<String>) {
+        viewModelScope.launch(Dispatchers.Default) {
+            notesUseCase.permanentlyDeleteDocuments(ids)
+            loadTrash()
+        }
     }
 
     override fun changeIcons(menuItemId: String, icon: String, tint: Int, iconChange: IconChange) {

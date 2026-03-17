@@ -161,6 +161,12 @@ class RoomDocumentRepository(
         )
     }
 
+    override suspend fun loadDeletedDocuments(workspaceId: String): List<Document> = emptyList()
+
+    override suspend fun restoreDocuments(ids: Set<String>) {}
+
+    override suspend fun permanentlyDeleteDocuments(ids: Set<String>) {}
+
     override suspend fun saveStoryStep(storyStep: StoryStep, position: Int, documentId: String) {
         println("saving story steps: ${storyStep.spans.joinToString { it.toText() }}")
         storyUnitEntityDao?.insertStoryUnits(storyStep.toEntity(position, documentId))

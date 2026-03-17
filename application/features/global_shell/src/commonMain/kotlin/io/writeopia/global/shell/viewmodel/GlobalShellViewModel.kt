@@ -29,6 +29,12 @@ interface GlobalShellViewModel : FolderController, OllamaConfigController {
 
     val showSearchDialog: StateFlow<Boolean>
 
+    val showCommandPaletteState: StateFlow<Boolean>
+
+    val showTrashState: StateFlow<Boolean>
+
+    val trashDocuments: StateFlow<List<MenuItemUi>>
+
     val workspaceLocalPath: StateFlow<String>
 
     val userState: StateFlow<WriteopiaUser>
@@ -68,6 +74,20 @@ interface GlobalShellViewModel : FolderController, OllamaConfigController {
     fun showSearch()
 
     fun hideSearch()
+
+    fun showCommandPalette()
+
+    fun hideCommandPalette()
+
+    fun showTrash()
+
+    fun hideTrash()
+
+    fun loadTrash()
+
+    fun restoreFromTrash(ids: Set<String>)
+
+    fun permanentlyDeleteFromTrash(ids: Set<String>)
 
     fun changeWorkspaceLocalPath(path: String)
 

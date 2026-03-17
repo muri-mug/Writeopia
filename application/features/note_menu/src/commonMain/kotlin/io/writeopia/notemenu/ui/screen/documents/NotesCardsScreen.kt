@@ -193,11 +193,28 @@ fun NotesCardsScreen(
             }
 
             Box(modifier = modifier.fillMaxSize()) {
-                Text(
+                androidx.compose.foundation.layout.Column(
                     modifier = Modifier.align(Alignment.Center),
-                    // stringResource(R.string.error_loading_notes)
-                    text = "Error!!"
-                )
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Icon(
+                        imageVector = io.writeopia.common.utils.icons.WrIcons.file,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.4f),
+                        modifier = Modifier.size(48.dp).padding(bottom = 8.dp)
+                    )
+                    Text(
+                        text = "Could not load notes",
+                        style = MaterialTheme.typography.titleMedium,
+                        color = MaterialTheme.colorScheme.onBackground,
+                    )
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        text = "Try restarting the app",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f),
+                    )
+                }
             }
         }
 
@@ -856,18 +873,48 @@ private fun SharedTransitionScope.TapToStartButton(
             .clip(MaterialTheme.shapes.large)
             .clickable(onClick = newNote)
     ) {
-        val text = WrStrings.tapToStart()
-
-        Text(
-            text = text,
-            modifier = Modifier.align(Alignment.Center)
-                .padding(16.dp)
-                .fillMaxWidth(),
-            color = MaterialTheme.colorScheme.onBackground,
-            style = MaterialTheme.typography.titleLarge,
-            fontFamily = FontFamily.Monospace,
-            letterSpacing = 1.sp,
-            textAlign = TextAlign.Center
-        )
+        if (isEmpty) {
+            androidx.compose.foundation.layout.Column(
+                modifier = Modifier
+                    .align(Alignment.Center)
+                    .padding(32.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+            ) {
+                Icon(
+                    imageVector = WrIcons.addCircle,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.3f),
+                    modifier = Modifier.size(64.dp).padding(bottom = 16.dp),
+                )
+                Text(
+                    text = WrStrings.tapToStart(),
+                    color = MaterialTheme.colorScheme.onBackground,
+                    style = MaterialTheme.typography.titleLarge,
+                    fontFamily = FontFamily.Monospace,
+                    letterSpacing = 1.sp,
+                    textAlign = TextAlign.Center,
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    text = "Click anywhere to create your first note",
+                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f),
+                    style = MaterialTheme.typography.bodyMedium,
+                    textAlign = TextAlign.Center,
+                )
+            }
+        } else {
+            Text(
+                text = WrStrings.tapToStart(),
+                modifier = Modifier
+                    .align(Alignment.Center)
+                    .padding(16.dp)
+                    .fillMaxWidth(),
+                color = MaterialTheme.colorScheme.onBackground,
+                style = MaterialTheme.typography.titleLarge,
+                fontFamily = FontFamily.Monospace,
+                letterSpacing = 1.sp,
+                textAlign = TextAlign.Center,
+            )
+        }
     }
 }

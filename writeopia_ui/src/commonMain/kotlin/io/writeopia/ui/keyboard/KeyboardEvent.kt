@@ -20,4 +20,5 @@ enum class KeyboardEvent {
     EQUATION,
     SEARCH,
     LIST,
+    COMMAND_PALETTE,
 }

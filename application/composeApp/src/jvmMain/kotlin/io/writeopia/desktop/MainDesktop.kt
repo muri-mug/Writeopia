@@ -3,11 +3,18 @@ package io.writeopia.desktop
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.key.KeyEvent
@@ -64,6 +71,7 @@ fun main() = application {
 
 @Composable
 private fun ApplicationScope.App(onCloseRequest: () -> Unit = ::exitApplication) {
+    var showCloseDialog by remember { mutableStateOf(false) }
     ImageLoadConfig.configImageLoad()
 
     val coroutineScope = rememberCoroutineScope()
@@ -188,6 +196,11 @@ private fun ApplicationScope.App(onCloseRequest: () -> Unit = ::exitApplication)
                 false
             }
 
+            KeyboardCommands.isCommandPaletteEvent(keyEvent) -> {
+                sendEvent(KeyboardEvent.COMMAND_PALETTE)
+                true
+            }
+
             else -> false
         }
     }
@@ -284,7 +297,7 @@ private fun ApplicationScope.App(onCloseRequest: () -> Unit = ::exitApplication)
     }
 
     Window(
-        onCloseRequest = onCloseRequest,
+        onCloseRequest = { showCloseDialog = true },
         title = "",
         state = windowState,
         onKeyEvent = handleKeyboardEvent,
@@ -306,6 +319,20 @@ private fun ApplicationScope.App(onCloseRequest: () -> Unit = ::exitApplication)
 
             CompositionLocalProvider(LocalPlatform provides PlatformType.DESKTOP) {
                 appFn()
+            }
+
+            if (showCloseDialog) {
+                AlertDialog(
+                    onDismissRequest = { showCloseDialog = false },
+                    title = { Text("Exit Writeopia?") },
+                    text = { Text("Any unsaved changes will be lost.") },
+                    confirmButton = {
+                        TextButton(onClick = onCloseRequest) { Text("Exit") }
+                    },
+                    dismissButton = {
+                        TextButton(onClick = { showCloseDialog = false }) { Text("Cancel") }
+                    }
+                )
             }
         }
     }

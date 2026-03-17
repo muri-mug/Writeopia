@@ -71,6 +71,12 @@ interface DocumentRepository : DocumentUpdate, DocumentSearch {
 
     suspend fun deleteDocumentByFolder(folderId: String)
 
+    suspend fun loadDeletedDocuments(workspaceId: String): List<Document>
+
+    suspend fun restoreDocuments(ids: Set<String>)
+
+    suspend fun permanentlyDeleteDocuments(ids: Set<String>)
+
     suspend fun favoriteDocumentByIds(ids: Set<String>)
 
     suspend fun unFavoriteDocumentByIds(ids: Set<String>)

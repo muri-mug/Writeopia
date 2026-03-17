@@ -18,9 +18,14 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.PlainTooltip
 import androidx.compose.material3.Text
+import androidx.compose.material3.TooltipBox
+import androidx.compose.material3.TooltipDefaults
+import androidx.compose.material3.rememberTooltipState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
@@ -55,6 +60,8 @@ fun SideGlobalMenu(
     searchClick: () -> Unit,
     homeClick: () -> Unit,
     favoritesClick: () -> Unit,
+    forceGraphClick: () -> Unit,
+    trashClick: () -> Unit,
     settingsClick: () -> Unit,
     addFolder: () -> Unit,
     highlightContent: () -> Unit,
@@ -138,6 +145,26 @@ fun SideGlobalMenu(
                     item {
                         SettingsOptions(
                             showContent = showContent,
+                            iconVector = WrIcons.chart,
+                            contentDescription = "Notes map",
+                            text = "Notes map",
+                            click = forceGraphClick
+                        )
+                    }
+
+                    item {
+                        SettingsOptions(
+                            showContent = showContent,
+                            iconVector = WrIcons.delete,
+                            contentDescription = "Trash",
+                            text = "Trash",
+                            click = trashClick
+                        )
+                    }
+
+                    item {
+                        SettingsOptions(
+                            showContent = showContent,
                             iconVector = WrIcons.settings,
                             contentDescription = WrStrings.settings(),
                             text = WrStrings.settings(),
@@ -189,8 +216,32 @@ fun SideGlobalMenu(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun SettingsOptions(
+    showContent: ShowContent,
+    iconVector: ImageVector?,
+    contentDescription: String,
+    text: String,
+    click: (() -> Unit)? = null,
+    trailingContent: @Composable (() -> Unit)? = null,
+    modifier: Modifier = Modifier
+) {
+    if (showContent == ShowContent.ICONS) {
+        TooltipBox(
+            positionProvider = TooltipDefaults.rememberTooltipPositionProvider(),
+            tooltip = { PlainTooltip { Text(text) } },
+            state = rememberTooltipState()
+        ) {
+            SettingsOptionsRow(showContent, iconVector, contentDescription, text, click, trailingContent, modifier)
+        }
+    } else {
+        SettingsOptionsRow(showContent, iconVector, contentDescription, text, click, trailingContent, modifier)
+    }
+}
+
+@Composable
+private fun SettingsOptionsRow(
     showContent: ShowContent,
     iconVector: ImageVector?,
     contentDescription: String,
@@ -294,6 +345,8 @@ fun SideGlobalMenuPreview() {
         searchClick = {},
         homeClick = {},
         favoritesClick = {},
+        forceGraphClick = {},
+        trashClick = {},
         settingsClick = {},
         addFolder = {},
         highlightContent = {},

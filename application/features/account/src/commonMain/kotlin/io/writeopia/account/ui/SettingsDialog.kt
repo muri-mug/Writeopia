@@ -21,12 +21,10 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicText
 import androidx.compose.foundation.text.BasicTextField
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -126,7 +124,7 @@ fun SettingsDialog(
             shape = RoundedCornerShape(16.dp),
         ) {
             SettingsPanel(
-                modifier = Modifier.padding(20.dp).verticalScroll(rememberScrollState()),
+                modifier = Modifier.padding(horizontal = 20.dp, vertical = 16.dp),
                 accountScreen = {
                     AccountScreen(
                         userOnlineState,

@@ -97,4 +97,10 @@ object KeyboardCommands {
         keyEvent.isCommandTrigger() &&
             keyEvent.key.keyCode == Key.Minus.keyCode &&
             keyEvent.type == KeyEventType.KeyUp
+
+    fun isCommandPaletteEvent(keyEvent: KeyEvent) =
+        keyEvent.isCommandTrigger() &&
+            keyEvent.isShiftPressed &&
+            keyEvent.key.keyCode == Key.P.keyCode &&
+            keyEvent.type == KeyEventType.KeyUp
 }

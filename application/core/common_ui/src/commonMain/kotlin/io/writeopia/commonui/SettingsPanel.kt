@@ -12,6 +12,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.pager.PagerState
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.VerticalDivider
@@ -42,7 +44,7 @@ fun SettingsPanel(
         mutableStateOf(if (ALLOW_BACKEND) SettingsPage.ACCOUNT else SettingsPage.APPEARANCE)
     }
 
-    Row(modifier = modifier) {
+    Row(modifier = modifier.fillMaxHeight()) {
         Column(modifier = Modifier.width(180.dp).fillMaxHeight()) {
             val currentPlatform = LocalPlatform.current
 
@@ -79,28 +81,25 @@ fun SettingsPanel(
             Text(WrStrings.version(), style = MaterialTheme.typography.labelSmall)
         }
 
-        VerticalDivider(modifier = Modifier.fillMaxHeight(), thickness = 1.dp, color = Color.Blue)
+        VerticalDivider(
+            modifier = Modifier.fillMaxHeight(),
+            thickness = 1.dp,
+            color = MaterialTheme.colorScheme.outlineVariant
+        )
 
-        Crossfade(pageState) { page ->
-            when (page) {
-                SettingsPage.ACCOUNT -> {
-                    accountScreen()
-                }
-
-                SettingsPage.APPEARANCE -> {
-                    appearanceScreen()
-                }
-
-                SettingsPage.DIRECTORY -> {
-                    directoryScreen()
-                }
-
-                SettingsPage.AI -> {
-                    aiScreen()
-                }
-
-                SettingsPage.TEAMS -> {
-                    teamsScreen()
+        Column(
+            modifier = Modifier
+                .weight(1f)
+                .verticalScroll(rememberScrollState())
+                .padding(horizontal = 16.dp)
+        ) {
+            Crossfade(pageState) { page ->
+                when (page) {
+                    SettingsPage.ACCOUNT -> accountScreen()
+                    SettingsPage.APPEARANCE -> appearanceScreen()
+                    SettingsPage.DIRECTORY -> directoryScreen()
+                    SettingsPage.AI -> aiScreen()
+                    SettingsPage.TEAMS -> teamsScreen()
                 }
             }
         }

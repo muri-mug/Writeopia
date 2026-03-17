@@ -202,6 +202,17 @@ class NotesUseCase private constructor(
         }
     }
 
+    suspend fun loadDeletedDocuments(workspaceId: String): List<Document> =
+        documentRepository.loadDeletedDocuments(workspaceId)
+
+    suspend fun restoreDocuments(ids: Set<String>) {
+        documentRepository.restoreDocuments(ids)
+    }
+
+    suspend fun permanentlyDeleteDocuments(ids: Set<String>) {
+        documentRepository.permanentlyDeleteDocuments(ids)
+    }
+
     suspend fun deleteFolderById(folderId: String) {
         val folder = folderRepository.getFolderById(folderId)
         val workspaceId = folder?.workspaceId ?: return

@@ -34,10 +34,13 @@ import io.writeopia.common.utils.Destinations
 import io.writeopia.common.utils.NotesNavigation
 import io.writeopia.common.utils.NotesNavigationType
 import io.writeopia.documents.graph.di.DocumentsGraphInjection
+import io.writeopia.documents.graph.navigation.navigateToForceGraph
 import io.writeopia.editor.di.EditorKmpInjector
 import io.writeopia.features.search.di.KmpSearchInjection
 import io.writeopia.features.search.ui.SearchDialog
+import io.writeopia.global.shell.CommandPaletteDialog
 import io.writeopia.global.shell.SideGlobalMenu
+import io.writeopia.global.shell.TrashDialog
 import io.writeopia.global.shell.di.SideMenuKmpInjector
 import io.writeopia.global.shell.viewmodel.GlobalShellViewModel
 import io.writeopia.model.ColorThemeOption
@@ -60,7 +63,10 @@ import io.writeopia.ui.keyboard.KeyboardEvent
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 @Composable
@@ -101,6 +107,15 @@ fun DesktopApp(
     val globalShellViewModel: GlobalShellViewModel =
         sideMenuInjector.provideSideMenuViewModel(keyboardEventFlow)
     val colorTheme by colorThemeOption.collectAsState()
+    val selectedThemePosition = remember(colorThemeOption) {
+        colorThemeOption.map { option ->
+            when (option) {
+                ColorThemeOption.LIGHT -> 0
+                ColorThemeOption.DARK -> 1
+                else -> 2
+            }
+        }.stateIn(coroutineScope, SharingStarted.WhileSubscribed(5000), 2)
+    }
     val navigationController: NavHostController = rememberNavController()
     val searchViewModel = KmpSearchInjection.singleton().provideViewModel()
 
@@ -153,6 +168,8 @@ fun DesktopApp(
                                 navigationController.navigateToNotes(NotesNavigation.Favorites)
                             }
                         },
+                        forceGraphClick = navigationController::navigateToForceGraph,
+                        trashClick = globalShellViewModel::showTrash,
                         settingsClick = globalShellViewModel::showSettings,
                         addFolder = globalShellViewModel::addFolder,
                         editFolder = globalShellViewModel::editFolder,
@@ -217,7 +234,7 @@ fun DesktopApp(
                             if (showSettingsState) {
                                 SettingsDialog(
                                     workplacePathState = globalShellViewModel.workspaceLocalPath,
-                                    selectedThemePosition = MutableStateFlow(2),
+                                    selectedThemePosition = selectedThemePosition,
                                     ollamaUrlState = globalShellViewModel.ollamaUrl,
                                     ollamaAvailableModels = globalShellViewModel.modelsForUrl,
                                     ollamaSelectedModel = globalShellViewModel.ollamaSelectedModelState,
@@ -271,6 +288,39 @@ fun DesktopApp(
                                     onDismissRequest = globalShellViewModel::hideSearch,
                                     documentClick = navigationController::navigateToNoteMobile,
                                     onFolderClick = navigationController::navigateToFolder
+                                )
+                            }
+
+                            val showCommandPalette by globalShellViewModel
+                                .showCommandPaletteState
+                                .collectAsState()
+
+                            if (showCommandPalette) {
+                                CommandPaletteDialog(
+                                    onDismissRequest = globalShellViewModel::hideCommandPalette,
+                                    onSearchClick = globalShellViewModel::showSearch,
+                                    onHomeClick = {
+                                        navigationController.navigateToNotes(NotesNavigation.Root)
+                                    },
+                                    onFavoritesClick = {
+                                        navigationController.navigateToNotes(NotesNavigation.Favorites)
+                                    },
+                                    onNotesMapClick = navigationController::navigateToForceGraph,
+                                    onSettingsClick = globalShellViewModel::showSettings,
+                                    onTrashClick = globalShellViewModel::showTrash
+                                )
+                            }
+
+                            val showTrash by globalShellViewModel
+                                .showTrashState
+                                .collectAsState()
+
+                            if (showTrash) {
+                                TrashDialog(
+                                    trashDocuments = globalShellViewModel.trashDocuments,
+                                    onDismissRequest = globalShellViewModel::hideTrash,
+                                    onRestore = globalShellViewModel::restoreFromTrash,
+                                    onPermanentlyDelete = globalShellViewModel::permanentlyDeleteFromTrash
                                 )
                             }
 

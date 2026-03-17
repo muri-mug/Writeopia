@@ -162,3 +162,20 @@ UPDATE documentEntity SET favorite = 0 WHERE id = ?;
 
 moveToFolder:
 UPDATE documentEntity SET parent_document_id = ?, last_updated_at = ? WHERE id = ?;
+
+selectDeleted:
+SELECT *
+FROM documentEntity
+WHERE workspace_id = ? AND deleted = 1
+ORDER BY last_updated_at DESC;
+
+restoreByIds:
+UPDATE documentEntity
+SET
+    deleted = 0,
+    last_updated_at = ?
+WHERE id IN ?;
+
+permanentlyDeleteByIds:
+DELETE FROM documentEntity
+WHERE id IN ?;

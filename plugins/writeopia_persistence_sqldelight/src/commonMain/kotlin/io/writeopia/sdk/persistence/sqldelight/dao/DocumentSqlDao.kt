@@ -505,6 +505,34 @@ class DocumentSqlDao(
         storyStepQueries?.deleteByDocumentIds(ids)
     }
 
+    suspend fun getDeletedDocuments(workspaceId: String): List<Document> =
+        documentQueries?.selectDeleted(workspaceId)
+            ?.awaitAsList()
+            ?.map { entity ->
+                Document(
+                    id = entity.id,
+                    title = entity.title,
+                    createdAt = Instant.fromEpochMilliseconds(entity.created_at),
+                    lastUpdatedAt = Instant.fromEpochMilliseconds(entity.last_updated_at),
+                    lastSyncedAt = entity.last_synced_at?.let(Instant::fromEpochMilliseconds),
+                    workspaceId = entity.workspace_id,
+                    favorite = entity.favorite == 1L,
+                    parentId = entity.parent_document_id,
+                    icon = entity.icon?.let { MenuItem.Icon(it, entity.icon_tint?.toInt()) },
+                    isLocked = entity.is_locked == 1L,
+                    deleted = true,
+                )
+            } ?: emptyList()
+
+    suspend fun restoreDocumentByIds(ids: Set<String>) {
+        documentQueries?.restoreByIds(Clock.System.now().toEpochMilliseconds(), ids)
+    }
+
+    suspend fun permanentlyDeleteDocumentByIds(ids: Set<String>) {
+        documentQueries?.permanentlyDeleteByIds(ids)
+        storyStepQueries?.deleteByDocumentIds(ids)
+    }
+
     suspend fun loadDocumentWithContentById(documentId: String, workspaceId: String): Document? =
         documentQueries?.selectWithContentById(documentId, workspaceId)
             ?.awaitAsList()
