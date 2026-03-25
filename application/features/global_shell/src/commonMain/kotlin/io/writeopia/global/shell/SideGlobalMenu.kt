@@ -143,15 +143,16 @@ fun SideGlobalMenu(
                         )
                     }
 
-                    item {
-                        SideNavItem(
-                            showContent = showContent,
-                            iconVector = WrIcons.chart,
-                            contentDescription = "Notes map",
-                            text = "Notes map",
-                            click = forceGraphClick,
-                        )
-                    }
+                    // TODO: Notes map - hidden, to be restored in the future
+//                    item {
+//                        SideNavItem(
+//                            showContent = showContent,
+//                            iconVector = WrIcons.chart,
+//                            contentDescription = "Notes map",
+//                            text = "Notes map",
+//                            click = forceGraphClick,
+//                        )
+//                    }
 
                     item {
                         SideNavItem(

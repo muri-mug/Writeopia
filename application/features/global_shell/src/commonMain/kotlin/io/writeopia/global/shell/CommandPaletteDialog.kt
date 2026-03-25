@@ -73,7 +73,8 @@ fun CommandPaletteDialog(
             PaletteCommand("Search notes", WrIcons.search) { onSearchClick(); onDismissRequest() },
             PaletteCommand("Home", WrIcons.home) { onHomeClick(); onDismissRequest() },
             PaletteCommand("Favorites", WrIcons.favorites) { onFavoritesClick(); onDismissRequest() },
-            PaletteCommand("Notes map", WrIcons.chart) { onNotesMapClick(); onDismissRequest() },
+            // TODO: Notes map - hidden, to be restored in the future
+//            PaletteCommand("Notes map", WrIcons.chart) { onNotesMapClick(); onDismissRequest() },
             PaletteCommand("Trash", WrIcons.delete) { onTrashClick(); onDismissRequest() },
             PaletteCommand("Settings", WrIcons.settings) { onSettingsClick(); onDismissRequest() },
         )

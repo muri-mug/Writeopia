@@ -42,14 +42,15 @@ fun DesktopNoteActionsMenu(
     Row(modifier = modifier, verticalAlignment = Alignment.CenterVertically) {
         val showSyncLoading by syncInProgressState.collectAsState()
 
-        Icon(
-            imageVector = WrIcons.chart,
-            contentDescription = "Chart",
-            modifier = Modifier.icon(onForceGraphSelected)
-                .padding(2.dp)
-                .testTag("onForceGraphSelected"),
-            tint = MaterialTheme.colorScheme.onBackground
-        )
+        // TODO: Notes map - hidden, to be restored in the future
+//        Icon(
+//            imageVector = WrIcons.chart,
+//            contentDescription = "Chart",
+//            modifier = Modifier.icon(onForceGraphSelected)
+//                .padding(2.dp)
+//                .testTag("onForceGraphSelected"),
+//            tint = MaterialTheme.colorScheme.onBackground
+//        )
 
         LoadingBox(showSyncLoading == SyncState.LoadingWrite) {
             Icon(
