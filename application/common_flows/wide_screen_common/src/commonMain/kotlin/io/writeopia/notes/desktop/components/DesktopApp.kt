@@ -147,6 +147,7 @@ fun DesktopApp(
                     SideGlobalMenu(
                         modifier = Modifier.fillMaxHeight(),
                         foldersState = globalShellViewModel.sideMenuItems,
+                        userState = globalShellViewModel.userState,
                         width = density.run { sideMenuWidth.toDp() },
                         homeClick = {
                             val navType = navigationController.currentBackStackEntry
@@ -183,7 +184,10 @@ fun DesktopApp(
                         searchClick = globalShellViewModel::showSearch,
                         highlightContent = {},
                         changeIcon = globalShellViewModel::changeIcons,
-                        toggleMaxScreen = toggleMaxScreen
+                        toggleMaxScreen = toggleMaxScreen,
+                        logoutClick = {
+                            globalShellViewModel.logout(sideEffect = navigateToRegister)
+                        }
                     )
 
                     Column {

@@ -59,6 +59,8 @@ import io.writeopia.common.utils.icons.all.Undo2
 import io.writeopia.common.utils.icons.all.WandSparkles
 import io.writeopia.common.utils.icons.all.X
 import io.writeopia.common.utils.icons.all.Zap
+import io.writeopia.common.utils.icons.all.HelpCircle
+import io.writeopia.common.utils.icons.all.LogOut
 import io.writeopia.common.utils.icons.all.highlighter
 
 object WrIcons {
@@ -179,6 +181,10 @@ object WrIcons {
     val link = Link
 
     val highlight = highlighter
+
+    val help: ImageVector = HelpCircle
+
+    val logout: ImageVector = LogOut
 
     val allIcons: Map<String, ImageVector> =
         mapOf(
