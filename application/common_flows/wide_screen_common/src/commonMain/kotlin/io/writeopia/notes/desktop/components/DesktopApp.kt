@@ -48,6 +48,7 @@ import io.writeopia.model.isDarkTheme
 import io.writeopia.navigation.Navigation
 import io.writeopia.navigation.notes.navigateToFolder
 import io.writeopia.navigation.notes.navigateToNoteMobile
+import io.writeopia.commonui.buttons.sideMenuDefaultWidth
 import io.writeopia.notemenu.data.usecase.NotesNavigationUseCase
 import io.writeopia.notemenu.di.NotesMenuKmpInjection
 import io.writeopia.notemenu.navigation.NAVIGATION_PATH
@@ -144,6 +145,16 @@ fun DesktopApp(
                 Row(Modifier.background(globalBackground)) {
                     val sideMenuWidth by globalShellViewModel.showSideMenuState.collectAsState()
 
+                    val toggleSideMenuToIcons: () -> Unit = {
+                        val currentDp = with(density) { sideMenuWidth.toDp() }
+                        if (currentDp > 80.dp) {
+                            globalShellViewModel.moveSideMenu(with(density) { 60.dp.toPx() })
+                        } else {
+                            globalShellViewModel.moveSideMenu(sideMenuDefaultWidth())
+                        }
+                        globalShellViewModel.saveMenuWidth()
+                    }
+
                     SideGlobalMenu(
                         modifier = Modifier.fillMaxHeight(),
                         foldersState = globalShellViewModel.sideMenuItems,
@@ -185,6 +196,7 @@ fun DesktopApp(
                         highlightContent = {},
                         changeIcon = globalShellViewModel::changeIcons,
                         toggleMaxScreen = toggleMaxScreen,
+                        toggleSideMenu = toggleSideMenuToIcons,
                         logoutClick = {
                             globalShellViewModel.logout(sideEffect = navigateToRegister)
                         }
@@ -351,7 +363,7 @@ fun DesktopApp(
                                     .width(24.dp)
                                     .align(alignment = Alignment.CenterStart)
                                     .clip(RoundedCornerShape(100))
-                                    .clickable(onClick = globalShellViewModel::toggleSideMenu)
+                                    .clickable(onClick = toggleSideMenuToIcons)
                                     .padding(top = 10.dp, bottom = 10.dp, start = 8.dp, end = 16.dp)
                                     .draggable(
                                         orientation = Orientation.Horizontal,

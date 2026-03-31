@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -39,6 +40,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
@@ -78,6 +80,7 @@ fun SideGlobalMenu(
     expandFolder: (String) -> Unit,
     changeIcon: (String, String, Int, IconChange) -> Unit,
     toggleMaxScreen: () -> Unit,
+    toggleSideMenu: () -> Unit = {},
     helpClick: () -> Unit = {},
     logoutClick: () -> Unit,
 ) {
@@ -91,9 +94,8 @@ fun SideGlobalMenu(
         }
     }
 
-    Row(
+    Box(
         modifier = modifier.background(background),
-        verticalAlignment = Alignment.CenterVertically
     ) {
         Box(
             modifier = Modifier
@@ -204,6 +206,28 @@ fun SideGlobalMenu(
                     )
                 }
             }
+        }
+
+        Box(
+            contentAlignment = Alignment.Center,
+            modifier = Modifier
+                .offset(x = widthAnimatedState - 12.dp, y = 28.dp)
+                .size(24.dp)
+                .clip(RoundedCornerShape(6.dp))
+                .background(MaterialTheme.colorScheme.surface)
+                .border(1.dp, Color.Black.copy(alpha = 0.1f), RoundedCornerShape(6.dp))
+                .clickable(onClick = toggleSideMenu)
+        ) {
+            Icon(
+                imageVector = WrIcons.smallArrowRight,
+                contentDescription = if (showContent == ShowContent.FULL) "Collapse menu" else "Expand menu",
+                modifier = Modifier
+                    .size(14.dp)
+                    .graphicsLayer {
+                        rotationZ = if (showContent == ShowContent.FULL) 180f else 0f
+                    },
+                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
         }
     }
 }
