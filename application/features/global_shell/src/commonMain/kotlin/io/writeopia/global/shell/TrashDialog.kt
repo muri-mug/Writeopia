@@ -13,15 +13,13 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
+import io.writeopia.commonui.buttons.WButton
+import io.writeopia.commonui.buttons.WButtonVariant
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -75,9 +73,11 @@ fun TrashDialog(
                         color = MaterialTheme.colorScheme.onBackground,
                         modifier = Modifier.weight(1f)
                     )
-                    TextButton(onClick = onDismissRequest) {
-                        Text("Close")
-                    }
+                    WButton(
+                        text = "Close",
+                        onClick = onDismissRequest,
+                        variant = WButtonVariant.Ghost,
+                    )
                 }
 
                 Spacer(modifier = Modifier.height(8.dp))
@@ -147,27 +147,16 @@ fun TrashDialog(
                                     modifier = Modifier.weight(1f)
                                 )
                                 Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-                                    OutlinedButton(
+                                    WButton(
+                                        text = "Restore",
                                         onClick = { onRestore(setOf(item.documentId)) },
-                                        modifier = Modifier.height(32.dp)
-                                    ) {
-                                        Text(
-                                            "Restore",
-                                            style = MaterialTheme.typography.labelSmall
-                                        )
-                                    }
-                                    OutlinedButton(
+                                        variant = WButtonVariant.Secondary,
+                                    )
+                                    WButton(
+                                        text = "Delete",
                                         onClick = { onPermanentlyDelete(setOf(item.documentId)) },
-                                        modifier = Modifier.height(32.dp),
-                                        colors = ButtonDefaults.outlinedButtonColors(
-                                            contentColor = MaterialTheme.colorScheme.error
-                                        )
-                                    ) {
-                                        Text(
-                                            "Delete",
-                                            style = MaterialTheme.typography.labelSmall
-                                        )
-                                    }
+                                        variant = WButtonVariant.Primary,
+                                    )
                                 }
                             }
                         }
@@ -182,35 +171,31 @@ fun TrashDialog(
                         horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.End)
                     ) {
                         if (selectedIds.isNotEmpty()) {
-                            OutlinedButton(onClick = {
-                                onRestore(selectedIds)
-                                selectedIds = emptySet()
-                            }) {
-                                Text("Restore selected (${selectedIds.size})")
-                            }
-                            Button(
+                            WButton(
+                                text = "Restore selected (${selectedIds.size})",
+                                onClick = {
+                                    onRestore(selectedIds)
+                                    selectedIds = emptySet()
+                                },
+                                variant = WButtonVariant.Secondary,
+                            )
+                            WButton(
+                                text = "Delete selected (${selectedIds.size})",
                                 onClick = {
                                     onPermanentlyDelete(selectedIds)
                                     selectedIds = emptySet()
                                 },
-                                colors = ButtonDefaults.buttonColors(
-                                    containerColor = MaterialTheme.colorScheme.error
-                                )
-                            ) {
-                                Text("Delete selected (${selectedIds.size})")
-                            }
+                                variant = WButtonVariant.Primary,
+                            )
                         } else {
-                            Button(
+                            WButton(
+                                text = "Empty trash",
                                 onClick = {
                                     val allIds = documents.map { it.documentId }.toSet()
                                     onPermanentlyDelete(allIds)
                                 },
-                                colors = ButtonDefaults.buttonColors(
-                                    containerColor = MaterialTheme.colorScheme.error
-                                )
-                            ) {
-                                Text("Empty trash")
-                            }
+                                variant = WButtonVariant.Primary,
+                            )
                         }
                     }
                 }
