@@ -1,11 +1,20 @@
 package io.writeopia.global.shell
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.expandHorizontally
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkHorizontally
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -24,7 +33,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.PlainTooltip
 import androidx.compose.material3.Text
@@ -42,6 +50,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -56,7 +66,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
-private const val FINAL_WIDTH = 500
+private const val FINAL_WIDTH = 256
+private const val LABEL_ANIM_DURATION = 180
 
 @Composable
 fun SideGlobalMenu(
@@ -128,6 +139,13 @@ fun SideGlobalMenu(
                             )
                         }
 
+                        item {
+                            SideSearchBar(
+                                showContent = showContent,
+                                onClick = searchClick,
+                            )
+                        }
+
                         item { SectionHeader(text = "MAIN", showContent = showContent) }
 
                         item {
@@ -137,6 +155,7 @@ fun SideGlobalMenu(
                                 contentDescription = WrStrings.home(),
                                 text = WrStrings.home(),
                                 click = homeClick,
+                                modifier = Modifier.semantics { testTag = "sideMenuHome" },
                             )
                         }
 
@@ -147,16 +166,7 @@ fun SideGlobalMenu(
                                 contentDescription = WrStrings.favorites(),
                                 text = WrStrings.favorites(),
                                 click = favoritesClick,
-                            )
-                        }
-
-                        item {
-                            SideNavItem(
-                                showContent = showContent,
-                                iconVector = WrIcons.delete,
-                                contentDescription = "Trash",
-                                text = "Trash",
-                                click = trashClick,
+                                modifier = Modifier.semantics { testTag = "sideMenuFavorites" },
                             )
                         }
 
@@ -195,6 +205,7 @@ fun SideGlobalMenu(
                                 contentDescription = WrStrings.settings(),
                                 text = WrStrings.settings(),
                                 click = settingsClick,
+                                modifier = Modifier.semantics { testTag = "sideMenuSettings" },
                             )
                         }
                     }
@@ -216,6 +227,7 @@ fun SideGlobalMenu(
                 .clip(RoundedCornerShape(6.dp))
                 .background(MaterialTheme.colorScheme.surface)
                 .border(1.dp, Color.Black.copy(alpha = 0.1f), RoundedCornerShape(6.dp))
+                .semantics { testTag = "sideMenuToggle" }
                 .clickable(onClick = toggleSideMenu)
         ) {
             Icon(
@@ -232,6 +244,68 @@ fun SideGlobalMenu(
     }
 }
 
+// ─── Search bar ──────────────────────────────────────────────────────────────
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun SideSearchBar(
+    showContent: ShowContent,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    if (showContent == ShowContent.HIDE) return
+    val isFull = showContent == ShowContent.FULL
+
+    if (!isFull) {
+        TooltipBox(
+            positionProvider = TooltipDefaults.rememberTooltipPositionProvider(),
+            tooltip = { PlainTooltip { Text("Search") } },
+            state = rememberTooltipState(),
+        ) {
+            Box(
+                contentAlignment = Alignment.Center,
+                modifier = modifier
+                    .size(44.dp)
+                    .clip(RoundedCornerShape(8.dp))
+                    .semantics { testTag = "sideMenuSearch" }
+                    .clickable(onClick = onClick),
+            ) {
+                Icon(
+                    imageVector = WrIcons.search,
+                    contentDescription = "Search",
+                    modifier = Modifier.size(16.dp),
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
+        }
+    } else {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = modifier
+                .fillMaxWidth()
+                .padding(horizontal = 12.dp, vertical = 4.dp)
+                .clip(RoundedCornerShape(8.dp))
+                .background(MaterialTheme.colorScheme.surfaceVariant)
+                .semantics { testTag = "sideMenuSearch" }
+                .clickable(onClick = onClick)
+                .padding(horizontal = 12.dp, vertical = 8.dp),
+        ) {
+            Icon(
+                imageVector = WrIcons.search,
+                contentDescription = "Search",
+                modifier = Modifier.size(16.dp),
+                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+            Spacer(Modifier.width(8.dp))
+            Text(
+                text = "Search...",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f),
+            )
+        }
+    }
+}
+
 // ─── User profile ───────────────────────────────────────────────────────────
 
 @Composable
@@ -240,21 +314,32 @@ private fun UserProfileItem(
     showContent: ShowContent,
     toggleMaxScreen: () -> Unit,
 ) {
-    when (showContent) {
-        ShowContent.FULL -> {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .combinedClickable(
-                        interactionSource = remember { MutableInteractionSource() },
-                        indication = null,
-                        onDoubleClick = toggleMaxScreen,
-                        onClick = {}
-                    )
-                    .padding(horizontal = 16.dp, vertical = 16.dp)
-            ) {
-                UserAvatar(name = user.name, size = 40.dp)
+    if (showContent == ShowContent.HIDE) return
+    val isFull = showContent == ShowContent.FULL
+
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = if (isFull) Arrangement.Start else Arrangement.Center,
+        modifier = Modifier
+            .fillMaxWidth()
+            .combinedClickable(
+                interactionSource = remember { MutableInteractionSource() },
+                indication = null,
+                onDoubleClick = toggleMaxScreen,
+                onClick = {}
+            )
+            .padding(
+                horizontal = if (isFull) 16.dp else 0.dp,
+                vertical = 16.dp,
+            )
+    ) {
+        UserAvatar(name = user.name, size = if (isFull) 40.dp else 36.dp)
+        AnimatedVisibility(
+            visible = isFull,
+            enter = fadeIn(tween(LABEL_ANIM_DURATION)) + expandHorizontally(tween(LABEL_ANIM_DURATION)),
+            exit = fadeOut(tween(LABEL_ANIM_DURATION)) + shrinkHorizontally(tween(LABEL_ANIM_DURATION)),
+        ) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
                 Spacer(Modifier.width(12.dp))
                 Column {
                     Text(
@@ -271,25 +356,6 @@ private fun UserProfileItem(
                 }
             }
         }
-
-        ShowContent.ICONS -> {
-            Box(
-                contentAlignment = Alignment.Center,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .combinedClickable(
-                        interactionSource = remember { MutableInteractionSource() },
-                        indication = null,
-                        onDoubleClick = toggleMaxScreen,
-                        onClick = {}
-                    )
-                    .padding(vertical = 16.dp)
-            ) {
-                UserAvatar(name = user.name, size = 36.dp)
-            }
-        }
-
-        ShowContent.HIDE -> Unit
     }
 }
 
@@ -315,16 +381,23 @@ private fun UserAvatar(name: String, size: Dp) {
 @Composable
 private fun SectionHeader(text: String, showContent: ShowContent) {
     if (showContent == ShowContent.HIDE) return
-    Text(
-        text = text,
-        style = MaterialTheme.typography.labelSmall,
-        color = MaterialTheme.colorScheme.onSurfaceVariant,
-        modifier = Modifier.padding(
-            start = if (showContent == ShowContent.FULL) 16.dp else 0.dp,
-            top = 12.dp,
-            bottom = 4.dp,
+
+    AnimatedVisibility(
+        visible = showContent == ShowContent.FULL,
+        enter = fadeIn(tween(LABEL_ANIM_DURATION)) + expandVertically(tween(LABEL_ANIM_DURATION)),
+        exit = fadeOut(tween(LABEL_ANIM_DURATION)) + shrinkVertically(tween(LABEL_ANIM_DURATION)),
+    ) {
+        Text(
+            text = text,
+            style = MaterialTheme.typography.labelSmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.padding(
+                start = 16.dp,
+                top = 12.dp,
+                bottom = 4.dp,
+            )
         )
-    )
+    }
 }
 
 @Composable
@@ -378,164 +451,166 @@ private fun SideNavItem(
     click: () -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
-    when (showContent) {
-        ShowContent.FULL -> {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = modifier
-                    .fillMaxWidth()
-                    .clip(RoundedCornerShape(8.dp))
-                    .background(
-                        if (selected) MaterialTheme.colorScheme.secondaryContainer
-                        else Color.Transparent
-                    )
-                    .clickable(onClick = click)
-                    .padding(horizontal = 16.dp, vertical = 10.dp)
-            ) {
-                iconVector?.let {
-                    Icon(
-                        imageVector = it,
-                        contentDescription = contentDescription,
-                        modifier = Modifier.size(20.dp),
-                        tint = if (selected) MaterialTheme.colorScheme.onSecondaryContainer
-                               else MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
-                }
-                Spacer(Modifier.width(12.dp))
-                Text(
-                    text = text,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = if (selected) MaterialTheme.colorScheme.onSecondaryContainer
-                            else MaterialTheme.colorScheme.onSurface,
+    if (showContent == ShowContent.HIDE) return
+    val isFull = showContent == ShowContent.FULL
+
+    @Composable
+    fun ItemRow() {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = if (isFull) Arrangement.Start else Arrangement.Center,
+            modifier = modifier
+                .then(if (isFull) Modifier.fillMaxWidth() else Modifier.size(44.dp))
+                .clip(RoundedCornerShape(8.dp))
+                .background(
+                    if (selected) MaterialTheme.colorScheme.secondaryContainer
+                    else Color.Transparent
+                )
+                .clickable(onClick = click)
+                .padding(
+                    horizontal = if (isFull) 16.dp else 0.dp,
+                    vertical = 10.dp,
+                )
+        ) {
+            iconVector?.let {
+                Icon(
+                    imageVector = it,
+                    contentDescription = contentDescription,
+                    modifier = Modifier.size(20.dp),
+                    tint = if (selected) MaterialTheme.colorScheme.onSecondaryContainer
+                    else MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
-        }
-
-        ShowContent.ICONS -> {
-            TooltipBox(
-                positionProvider = TooltipDefaults.rememberTooltipPositionProvider(),
-                tooltip = { PlainTooltip { Text(text) } },
-                state = rememberTooltipState(),
+            AnimatedVisibility(
+                visible = isFull,
+                enter = fadeIn(tween(LABEL_ANIM_DURATION)) + expandHorizontally(tween(LABEL_ANIM_DURATION)),
+                exit = fadeOut(tween(LABEL_ANIM_DURATION)) + shrinkHorizontally(tween(LABEL_ANIM_DURATION)),
             ) {
-                Box(
-                    contentAlignment = Alignment.Center,
-                    modifier = modifier
-                        .size(44.dp)
-                        .clip(RoundedCornerShape(8.dp))
-                        .background(
-                            if (selected) MaterialTheme.colorScheme.secondaryContainer
-                            else Color.Transparent
-                        )
-                        .clickable(onClick = click)
-                ) {
-                    iconVector?.let {
-                        Icon(
-                            imageVector = it,
-                            contentDescription = contentDescription,
-                            modifier = Modifier.size(20.dp),
-                            tint = if (selected) MaterialTheme.colorScheme.onSecondaryContainer
-                                   else MaterialTheme.colorScheme.onSurfaceVariant,
-                        )
-                    }
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Spacer(Modifier.width(12.dp))
+                    Text(
+                        text = text,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = if (selected) MaterialTheme.colorScheme.onSecondaryContainer
+                        else MaterialTheme.colorScheme.onSurface,
+                    )
                 }
             }
         }
+    }
 
-        ShowContent.HIDE -> Unit
+    if (!isFull) {
+        TooltipBox(
+            positionProvider = TooltipDefaults.rememberTooltipPositionProvider(),
+            tooltip = { PlainTooltip { Text(text) } },
+            state = rememberTooltipState(),
+        ) {
+            ItemRow()
+        }
+    } else {
+        ItemRow()
     }
 }
 
 // ─── Bottom actions ──────────────────────────────────────────────────────────
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun BottomActions(
     showContent: ShowContent,
     helpClick: () -> Unit,
     logoutClick: () -> Unit,
 ) {
-    when (showContent) {
-        ShowContent.FULL -> {
-            Column {
-                HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clickable(onClick = helpClick)
-                        .padding(horizontal = 16.dp, vertical = 12.dp)
-                ) {
-                    Icon(
-                        imageVector = WrIcons.help,
-                        contentDescription = "Help",
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                        modifier = Modifier.size(20.dp)
-                    )
+    if (showContent == ShowContent.HIDE) return
+
+    Column(
+        horizontalAlignment = if (showContent == ShowContent.FULL) Alignment.Start
+        else Alignment.CenterHorizontally,
+    ) {
+        HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+        BottomActionItem(
+            showContent = showContent,
+            icon = WrIcons.help,
+            contentDescription = "Help",
+            text = "Help",
+            click = helpClick,
+            modifier = Modifier.semantics { testTag = "sideMenuHelp" },
+        )
+        BottomActionItem(
+            showContent = showContent,
+            icon = WrIcons.logout,
+            contentDescription = WrStrings.logout(),
+            text = WrStrings.logout(),
+            click = logoutClick,
+            accentColor = MaterialTheme.colorScheme.error,
+            boldText = true,
+            modifier = Modifier.semantics { testTag = "sideMenuLogout" },
+        )
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun BottomActionItem(
+    showContent: ShowContent,
+    icon: ImageVector,
+    contentDescription: String,
+    text: String,
+    click: () -> Unit,
+    accentColor: Color? = null,
+    boldText: Boolean = false,
+    modifier: Modifier = Modifier,
+) {
+    val isFull = showContent == ShowContent.FULL
+    val iconTint = accentColor ?: MaterialTheme.colorScheme.onSurfaceVariant
+    val textColor = accentColor ?: MaterialTheme.colorScheme.onSurfaceVariant
+
+    @Composable
+    fun ItemRow() {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = if (isFull) Arrangement.Start else Arrangement.Center,
+            modifier = modifier
+                .then(if (isFull) Modifier.fillMaxWidth() else Modifier.size(44.dp))
+                .clickable(onClick = click)
+                .padding(
+                    horizontal = if (isFull) 16.dp else 0.dp,
+                    vertical = 12.dp,
+                )
+        ) {
+            Icon(
+                imageVector = icon,
+                contentDescription = contentDescription,
+                tint = iconTint,
+                modifier = Modifier.size(20.dp),
+            )
+            AnimatedVisibility(
+                visible = isFull,
+                enter = fadeIn(tween(LABEL_ANIM_DURATION)) + expandHorizontally(tween(LABEL_ANIM_DURATION)),
+                exit = fadeOut(tween(LABEL_ANIM_DURATION)) + shrinkHorizontally(tween(LABEL_ANIM_DURATION)),
+            ) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
                     Spacer(Modifier.width(12.dp))
                     Text(
-                        text = "Help",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
-                }
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clickable(onClick = logoutClick)
-                        .padding(horizontal = 16.dp, vertical = 12.dp)
-                ) {
-                    Icon(
-                        imageVector = WrIcons.logout,
-                        contentDescription = WrStrings.logout(),
-                        tint = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier.size(20.dp)
-                    )
-                    Spacer(Modifier.width(12.dp))
-                    Text(
-                        text = WrStrings.logout(),
-                        style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.SemiBold),
-                        color = MaterialTheme.colorScheme.primary,
+                        text = text,
+                        style = if (boldText) MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.SemiBold)
+                        else MaterialTheme.typography.bodySmall,
+                        color = textColor,
                     )
                 }
             }
         }
+    }
 
-        ShowContent.ICONS -> {
-            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
-                TooltipBox(
-                    positionProvider = TooltipDefaults.rememberTooltipPositionProvider(),
-                    tooltip = { PlainTooltip { Text("Help") } },
-                    state = rememberTooltipState(),
-                ) {
-                    IconButton(onClick = helpClick) {
-                        Icon(
-                            imageVector = WrIcons.help,
-                            contentDescription = "Help",
-                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                            modifier = Modifier.size(20.dp)
-                        )
-                    }
-                }
-                TooltipBox(
-                    positionProvider = TooltipDefaults.rememberTooltipPositionProvider(),
-                    tooltip = { PlainTooltip { Text(WrStrings.logout()) } },
-                    state = rememberTooltipState(),
-                ) {
-                    IconButton(onClick = logoutClick) {
-                        Icon(
-                            imageVector = WrIcons.logout,
-                            contentDescription = WrStrings.logout(),
-                            tint = MaterialTheme.colorScheme.primary,
-                            modifier = Modifier.size(20.dp)
-                        )
-                    }
-                }
-            }
+    if (!isFull) {
+        TooltipBox(
+            positionProvider = TooltipDefaults.rememberTooltipPositionProvider(),
+            tooltip = { PlainTooltip { Text(text) } },
+            state = rememberTooltipState(),
+        ) {
+            ItemRow()
         }
-
-        ShowContent.HIDE -> Unit
+    } else {
+        ItemRow()
     }
 }
 
