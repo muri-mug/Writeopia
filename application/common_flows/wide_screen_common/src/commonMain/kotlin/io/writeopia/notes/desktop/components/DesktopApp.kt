@@ -150,7 +150,7 @@ fun DesktopApp(
                         if (currentDp > 80.dp) {
                             globalShellViewModel.moveSideMenu(with(density) { 60.dp.toPx() })
                         } else {
-                            globalShellViewModel.moveSideMenu(sideMenuDefaultWidth())
+                            globalShellViewModel.moveSideMenu(with(density) { 256.dp.toPx() })
                         }
                         globalShellViewModel.saveMenuWidth()
                     }

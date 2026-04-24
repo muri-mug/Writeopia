@@ -24,14 +24,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.PointerIcon
 import androidx.compose.ui.input.pointer.pointerHoverIcon
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import io.writeopia.account.ui.DownloadModels
 import io.writeopia.common.utils.download.DownloadState
 import io.writeopia.common.utils.icons.WrIcons
@@ -113,8 +111,7 @@ private fun Configuration(
 
         Text(
             text = WrStrings.onboardingTutorialExplain(),
-            style = MaterialTheme.typography.bodyMedium,
-            fontSize = 12.sp,
+            style = MaterialTheme.typography.bodySmall,
         )
 
         Spacer(modifier = Modifier.height(24.dp))
@@ -131,7 +128,6 @@ private fun Configuration(
             text = WrStrings.onboardingChooseAi(),
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onBackground,
-            fontSize = 14.sp,
             fontWeight = FontWeight.Bold
         )
 
@@ -148,14 +144,14 @@ private fun Configuration(
 
             Box(
                 modifier = Modifier.padding(8.dp)
-                    .background(Color.Blue, CircleShape)
+                    .background(MaterialTheme.colorScheme.primary, CircleShape)
                     .size(32.dp)
             ) {
                 Text(
                     modifier = Modifier.align(Alignment.Center),
                     text = "2",
                     textAlign = TextAlign.Center,
-                    color = Color.White
+                    color = MaterialTheme.colorScheme.onPrimary
                 )
             }
         }
@@ -175,7 +171,6 @@ private fun DownloadOllamaStep() {
                 text = WrStrings.downloadOllama(),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onBackground,
-                fontSize = 14.sp,
                 fontWeight = FontWeight.Bold
             )
 
@@ -187,7 +182,6 @@ private fun DownloadOllamaStep() {
                 text = WrStrings.accessOllamaSite(),
                 style = MaterialTheme.typography.bodySmall,
                 color = WriteopiaTheme.colorScheme.textLight,
-                fontSize = 12.sp,
                 modifier = Modifier.clickable {
                     uriHandler.openUri(uri = "https://ollama.com")
                 }.pointerHoverIcon(icon = PointerIcon.Hand)
@@ -196,14 +190,14 @@ private fun DownloadOllamaStep() {
 
         Box(
             modifier = Modifier.padding(8.dp)
-                .background(Color.Blue, CircleShape)
+                .background(MaterialTheme.colorScheme.primary, CircleShape)
                 .size(32.dp)
         ) {
             Text(
                 modifier = Modifier.align(Alignment.Center),
                 text = "1",
                 textAlign = TextAlign.Center,
-                color = Color.White
+                color = MaterialTheme.colorScheme.onPrimary
             )
         }
     }

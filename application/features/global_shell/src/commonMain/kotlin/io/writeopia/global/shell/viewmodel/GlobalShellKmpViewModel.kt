@@ -199,7 +199,7 @@ class GlobalShellKmpViewModel(
             sideMenuWidthState.asStateFlow()
         ) { configuration, width ->
             width ?: configuration.sideMenuWidth
-        }.stateIn(viewModelScope, SharingStarted.Lazily, 280F)
+        }.stateIn(viewModelScope, SharingStarted.Lazily, sideMenuDefaultWidth())
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)

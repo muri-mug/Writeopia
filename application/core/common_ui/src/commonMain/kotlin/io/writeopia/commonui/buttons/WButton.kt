@@ -1,120 +1,128 @@
 package io.writeopia.commonui.buttons
 
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 
+// M3 button roles — https://m3.material.io/components/buttons/overview
 enum class WButtonVariant {
-    /** Filled — use for the single most important action on screen. */
-    Primary,
+    /** M3 Filled button — highest emphasis. */
+    Filled,
 
-    /** Muted fill — use for secondary/supporting actions. */
-    Secondary,
+    /** M3 Filled Tonal button — medium-high emphasis. */
+    Tonal,
 
-    /** No background — use for low-emphasis / tertiary actions. */
-    Ghost,
+    /** M3 Outlined button — medium emphasis. */
+    Outlined,
+
+    /** M3 Text button — lowest emphasis. */
+    Text,
+
+    /** Destructive action — error color scheme. */
+    Destructive,
 }
 
-/**
- * Writeopia button following shadcn/ui default button styles, mapped to the
- * project's Material 3 colour tokens.
- *
- * Variants:
- *  - [WButtonVariant.Primary]   → primary bg, onPrimary text
- *  - [WButtonVariant.Secondary] → secondaryContainer bg, onSecondaryContainer text
- *  - [WButtonVariant.Ghost]     → transparent bg, onBackground text
- */
 @Composable
 fun WButton(
     text: String,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
-    variant: WButtonVariant = WButtonVariant.Primary,
+    variant: WButtonVariant = WButtonVariant.Filled,
     leadingIcon: ImageVector? = null,
     leadingIconDescription: String? = null,
     enabled: Boolean = true,
 ) {
-    val colors = MaterialTheme.colorScheme
-    val shape = MaterialTheme.shapes.medium   // 6 dp rounded corners
-
-    val containerColor: Color
-    val contentColor: Color
-    val borderStroke: BorderStroke?
-
-    when (variant) {
-        WButtonVariant.Primary -> {
-            containerColor = if (enabled) colors.primary else colors.onSurface.copy(alpha = 0.12f)
-            contentColor = if (enabled) colors.onPrimary else colors.onSurface.copy(alpha = 0.38f)
-            borderStroke = null
-        }
-
-        WButtonVariant.Secondary -> {
-            containerColor = if (enabled) colors.secondaryContainer else colors.onSurface.copy(alpha = 0.12f)
-            contentColor = if (enabled) colors.onSecondaryContainer else colors.onSurface.copy(alpha = 0.38f)
-            borderStroke = null
-        }
-
-        WButtonVariant.Ghost -> {
-            containerColor = Color.Transparent
-            contentColor = if (enabled) colors.onBackground else colors.onSurface.copy(alpha = 0.38f)
-            borderStroke = null
-        }
-    }
-
-    var rowModifier = modifier
-        .height(36.dp)
-        .clip(shape)
-        .background(containerColor, shape)
-
-    if (borderStroke != null) {
-        rowModifier = rowModifier.border(borderStroke, shape)
-    }
-
-    if (enabled) {
-        rowModifier = rowModifier.clickable(onClick = onClick)
-    }
-
-    rowModifier = rowModifier.padding(horizontal = 16.dp)
-
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.Center,
-        modifier = rowModifier,
-    ) {
-        if (leadingIcon != null) {
+    val icon: @Composable (() -> Unit)? = if (leadingIcon != null) {
+        {
             Icon(
                 imageVector = leadingIcon,
                 contentDescription = leadingIconDescription,
-                tint = contentColor,
-                modifier = Modifier.size(16.dp),
+                modifier = Modifier.size(ButtonDefaults.IconSize),
             )
-            Spacer(modifier = Modifier.width(8.dp))
+        }
+    } else null
+
+    when (variant) {
+        WButtonVariant.Filled -> Button(
+            onClick = onClick,
+            modifier = modifier,
+            enabled = enabled,
+        ) {
+            if (icon != null) {
+                icon()
+                Text(text = text, fontWeight = FontWeight.Medium)
+            } else {
+                Text(text = text, fontWeight = FontWeight.Medium)
+            }
         }
 
-        Text(
-            text = text,
-            style = MaterialTheme.typography.bodySmall,
-            fontWeight = FontWeight.Medium,
-            color = contentColor,
-        )
+        WButtonVariant.Tonal -> FilledTonalButton(
+            onClick = onClick,
+            modifier = modifier,
+            enabled = enabled,
+        ) {
+            if (icon != null) {
+                icon()
+                Text(text = text, fontWeight = FontWeight.Medium)
+            } else {
+                Text(text = text, fontWeight = FontWeight.Medium)
+            }
+        }
+
+        WButtonVariant.Outlined -> OutlinedButton(
+            onClick = onClick,
+            modifier = modifier,
+            enabled = enabled,
+        ) {
+            if (icon != null) {
+                icon()
+                Text(text = text, fontWeight = FontWeight.Medium)
+            } else {
+                Text(text = text, fontWeight = FontWeight.Medium)
+            }
+        }
+
+        WButtonVariant.Text -> TextButton(
+            onClick = onClick,
+            modifier = modifier,
+            enabled = enabled,
+        ) {
+            if (icon != null) {
+                icon()
+                Text(text = text, fontWeight = FontWeight.Medium)
+            } else {
+                Text(text = text, fontWeight = FontWeight.Medium)
+            }
+        }
+
+        WButtonVariant.Destructive -> Button(
+            onClick = onClick,
+            modifier = modifier,
+            enabled = enabled,
+            colors = ButtonDefaults.buttonColors(
+                containerColor = MaterialTheme.colorScheme.error,
+                contentColor   = MaterialTheme.colorScheme.onError,
+            ),
+            border = null,
+        ) {
+            if (icon != null) {
+                icon()
+                Text(text = text, fontWeight = FontWeight.Medium)
+            } else {
+                Text(text = text, fontWeight = FontWeight.Medium)
+            }
+        }
     }
 }

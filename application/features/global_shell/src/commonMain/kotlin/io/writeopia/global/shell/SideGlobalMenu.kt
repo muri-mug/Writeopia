@@ -29,7 +29,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -113,8 +112,8 @@ fun SideGlobalMenu(
                 .width(widthAnimatedState)
                 .fillMaxHeight()
                 .padding(start = 8.dp, top = 8.dp, bottom = 8.dp)
-                .border(1.dp, Color.Black.copy(alpha = 0.1f), RoundedCornerShape(12.dp))
-                .clip(RoundedCornerShape(12.dp))
+                .border(1.dp, MaterialTheme.colorScheme.outlineVariant, MaterialTheme.shapes.medium)
+                .clip(MaterialTheme.shapes.medium)
                 .background(MaterialTheme.colorScheme.surface)
         ) {
             if (showContent != ShowContent.HIDE) {
@@ -224,9 +223,9 @@ fun SideGlobalMenu(
             modifier = Modifier
                 .offset(x = widthAnimatedState - 12.dp, y = 28.dp)
                 .size(24.dp)
-                .clip(RoundedCornerShape(6.dp))
+                .clip(MaterialTheme.shapes.small)
                 .background(MaterialTheme.colorScheme.surface)
-                .border(1.dp, Color.Black.copy(alpha = 0.1f), RoundedCornerShape(6.dp))
+                .border(1.dp, MaterialTheme.colorScheme.outlineVariant, MaterialTheme.shapes.small)
                 .semantics { testTag = "sideMenuToggle" }
                 .clickable(onClick = toggleSideMenu)
         ) {
@@ -266,7 +265,7 @@ private fun SideSearchBar(
                 contentAlignment = Alignment.Center,
                 modifier = modifier
                     .size(44.dp)
-                    .clip(RoundedCornerShape(8.dp))
+                    .clip(MaterialTheme.shapes.small)
                     .semantics { testTag = "sideMenuSearch" }
                     .clickable(onClick = onClick),
             ) {
@@ -284,7 +283,7 @@ private fun SideSearchBar(
             modifier = modifier
                 .fillMaxWidth()
                 .padding(horizontal = 12.dp, vertical = 4.dp)
-                .clip(RoundedCornerShape(8.dp))
+                .clip(MaterialTheme.shapes.small)
                 .background(MaterialTheme.colorScheme.surfaceVariant)
                 .semantics { testTag = "sideMenuSearch" }
                 .clickable(onClick = onClick)
@@ -422,7 +421,7 @@ private fun FolderSectionHeader(
             contentDescription = "Select opened file",
             tint = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.size(28.dp)
-                .clip(RoundedCornerShape(6.dp))
+                .clip(MaterialTheme.shapes.small)
                 .clickable(onClick = highlightContent)
                 .padding(4.dp)
         )
@@ -431,7 +430,7 @@ private fun FolderSectionHeader(
             contentDescription = "Add Folder",
             tint = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.size(28.dp)
-                .clip(RoundedCornerShape(6.dp))
+                .clip(MaterialTheme.shapes.small)
                 .clickable(onClick = addFolder)
                 .padding(4.dp)
         )
@@ -461,7 +460,7 @@ private fun SideNavItem(
             horizontalArrangement = if (isFull) Arrangement.Start else Arrangement.Center,
             modifier = modifier
                 .then(if (isFull) Modifier.fillMaxWidth() else Modifier.size(44.dp))
-                .clip(RoundedCornerShape(8.dp))
+                .clip(MaterialTheme.shapes.small)
                 .background(
                     if (selected) MaterialTheme.colorScheme.secondaryContainer
                     else Color.Transparent

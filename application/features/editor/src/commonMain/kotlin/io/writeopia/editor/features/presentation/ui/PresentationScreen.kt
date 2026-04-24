@@ -17,7 +17,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import io.writeopia.common.utils.icons.WrIcons
 import io.writeopia.editor.features.presentation.viewmodel.PresentationViewModel
@@ -32,7 +31,7 @@ fun PresentationScreen(presentationViewModel: PresentationViewModel) {
             CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
         } else {
             WriteopiaPresentationScreen(
-                modifier = Modifier.fillMaxSize().background(Color(0xFF252525)),
+                modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background),
                 currentPage = presentationViewModel.currentPage,
                 data = slides
             )

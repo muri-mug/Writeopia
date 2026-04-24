@@ -76,7 +76,7 @@ fun TrashDialog(
                     WButton(
                         text = "Close",
                         onClick = onDismissRequest,
-                        variant = WButtonVariant.Ghost,
+                        variant = WButtonVariant.Text,
                     )
                 }
 
@@ -150,12 +150,12 @@ fun TrashDialog(
                                     WButton(
                                         text = "Restore",
                                         onClick = { onRestore(setOf(item.documentId)) },
-                                        variant = WButtonVariant.Secondary,
+                                        variant = WButtonVariant.Tonal,
                                     )
                                     WButton(
                                         text = "Delete",
                                         onClick = { onPermanentlyDelete(setOf(item.documentId)) },
-                                        variant = WButtonVariant.Primary,
+                                        variant = WButtonVariant.Filled,
                                     )
                                 }
                             }
@@ -177,7 +177,7 @@ fun TrashDialog(
                                     onRestore(selectedIds)
                                     selectedIds = emptySet()
                                 },
-                                variant = WButtonVariant.Secondary,
+                                variant = WButtonVariant.Tonal,
                             )
                             WButton(
                                 text = "Delete selected (${selectedIds.size})",
@@ -185,7 +185,7 @@ fun TrashDialog(
                                     onPermanentlyDelete(selectedIds)
                                     selectedIds = emptySet()
                                 },
-                                variant = WButtonVariant.Primary,
+                                variant = WButtonVariant.Filled,
                             )
                         } else {
                             WButton(
@@ -194,7 +194,7 @@ fun TrashDialog(
                                     val allIds = documents.map { it.documentId }.toSet()
                                     onPermanentlyDelete(allIds)
                                 },
-                                variant = WButtonVariant.Primary,
+                                variant = WButtonVariant.Filled,
                             )
                         }
                     }

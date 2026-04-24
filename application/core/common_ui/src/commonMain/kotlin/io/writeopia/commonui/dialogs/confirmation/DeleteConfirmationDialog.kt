@@ -14,7 +14,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -61,7 +60,7 @@ fun DeleteConfirmationDialog(
                     Text(
                         WrStrings.delete(),
                         style = MaterialTheme.typography.bodyMedium,
-                        color = Color.Red,
+                        color = MaterialTheme.colorScheme.error,
                         fontWeight = FontWeight.Bold,
                         modifier = Modifier.clip(MaterialTheme.shapes.medium)
                             .clickable(onClick = onConfirmation)
